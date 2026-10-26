@@ -1,0 +1,35 @@
+{
+  "schema_version": 1,
+  "day": "2026-10-25",
+  "timezone": "America/Los_Angeles",
+  "generated_at": "2026-10-25T16:13:13.584319+00:00",
+  "discovery_status": "complete",
+  "stats": {
+    "new": 0,
+    "updated": 0,
+    "analyzed": 2,
+    "abstract_only": 0,
+    "discovery_failed": 0,
+    "deferred": 5,
+    "waiting_config": 0
+  },
+  "library": {
+    "total": 1004,
+    "analyzed": 6,
+    "pending": 988,
+    "failed": 0,
+    "unscreened": 821,
+    "excluded": 10
+  },
+  "recommendations": [
+    {
+      "arxiv_id": "2610.30429",
+      "version": 1,
+      "title": "RoleFlow: Self-Evolving Multi-Role Agentic Collaboration via Structural Adaptation",
+      "path": "papers/2610.30429/v1/",
+      "summary": "RoleFlow 针对固定协作结构和结构编辑信用分配困难，通过反馈驱动的原子编辑、按需角色合成及 SECPO 训练适应角色链；作者报告七基准平均67.1分，比 W4S 高4.7分。",
+      "reason": "系统判断：同状态反事实评估与编辑 token 信用分配值得重点审阅；b00057 提供预算对照，b00058 承认消融边界，但创新优先权尚未独立核验。"
+    }
+  ],
+  "path": "reports/2026-10-25/"
+}

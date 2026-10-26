@@ -1,0 +1,1592 @@
+{
+  "schema_version": 1,
+  "paper": {
+    "title": "EvoAgent: Towards Automatic Multi-Agent Generation via Evolutionary Algorithms",
+    "authors": [
+      "Siyu Yuan",
+      "Kaitao Song",
+      "Jiangjie Chen",
+      "Xu Tan",
+      "Dongsheng Li",
+      "Deqing Yang"
+    ],
+    "abstract": "The rise of powerful large language models (LLMs) has spurred a new trend in building LLM-based autonomous agents for solving complex tasks, especially multi-agent systems. Despite the remarkable progress, we notice that existing works are heavily dependent on human-designed frameworks, which greatly limits the functional scope and scalability of agent systems. How to automatically extend the specialized agent to multi-agent systems to improve task-solving capability still remains a significant challenge. In this paper, we introduce EvoAgent, a generic method to automatically extend specialized agents to multi-agent systems via the evolutionary algorithm, thereby improving the effectiveness of LLM-based agents in solving tasks. Specifically, we consider the existing agent frameworks as the initial individual and then apply a series of evolutionary operators (e.g., mutation, crossover, selection, etc.) to generate multiple agents with diverse settings. Experimental results across various tasks show that EvoAgent can significantly enhance the task-solving capability of LLM-based agents, and can be generalized to any LLM-based agent framework to extend them into multi-agent systems. Resources are available at https://evo-agent.github.io/.",
+    "categories": [
+      "cs.AI"
+    ],
+    "first_submitted_at": "2024-06-20T11:49:23Z",
+    "updated_at": "2025-03-10T02:42:01Z",
+    "doi": null,
+    "journal_ref": null,
+    "arxiv_id": "2406.14228",
+    "version": 3,
+    "abstract_url": "https://arxiv.org/abs/2406.14228v3",
+    "pdf_url": "https://arxiv.org/pdf/2406.14228v3"
+  },
+  "topics": [
+    "multi_agent",
+    "self_evolution",
+    "intersection"
+  ],
+  "status": "analyzed",
+  "coverage": "full_text",
+  "topic_status": "confirmed",
+  "analysis": {
+    "one_sentence": {
+      "id": "c001",
+      "text": "针对人工设计限制智能体扩展的问题，EvoAgent 用 LLM 模拟进化算子，生成专业智能体并整合答案；作者报告多任务表现改善，例如 ScienceWorld 的 GPT-4 总体得分由27.97升至30.42。",
+      "evidence": [
+        {
+          "block_id": "b00004",
+          "quote": "it also limits scaling up the number of agents to further improve performance due to expensive human labor."
+        },
+        {
+          "block_id": "b00015",
+          "quote": "Thus, we can employ LLM to simulate evolutionary operators to update the system settings of agents and create new agents."
+        },
+        {
+          "block_id": "b00019",
+          "quote": "we ask each child agent to generate candidate results and then use LLMs to integrate these candidates with the result from the previous iteration into a new result"
+        },
+        {
+          "block_id": "b00038",
+          "quote": "GPT-4 27.97 10.58 36.00 42.41 w/ EvoAgent (1,1) 30.42 11.38 36.17 48.67"
+        }
+      ]
+    },
+    "research_problem": [
+      {
+        "id": "c002",
+        "text": "作者指出，已有智能体框架依赖人工设计角色、任务范围、技能和提示词，增加智能体数量需要昂贵人力；研究目标是自动将已有专业智能体扩展为多智能体系统。",
+        "evidence": [
+          {
+            "block_id": "b00004",
+            "quote": "their designs heavily depend on handcrafted settings, including character roles, task scopes, skills, and prompt settings."
+          },
+          {
+            "block_id": "b00004",
+            "quote": "it also limits scaling up the number of agents to further improve performance due to expensive human labor."
+          },
+          {
+            "block_id": "b00005",
+            "quote": "With a series operation of EAs (e.g., selection, crossover, mutation), EvoAgent can automatically create multiple evolutionary agents based on the initial specialized agent."
+          }
+        ]
+      }
+    ],
+    "method_steps": [
+      {
+        "id": "c003",
+        "text": "以预定义框架中的智能体为初始父代，将角色、技能、提示词等语言设置作为进化变量，由 LLM 模拟进化算子。",
+        "evidence": [
+          {
+            "block_id": "b00016",
+            "quote": "Here, we enable EvoAgent to start from a pre-defined agent framework (e.g., MetaGPT Hong et al. (2024) and AutoGen Wu et al. (2023) ), which serves as the initial (parent) agents."
+          },
+          {
+            "block_id": "b00005",
+            "quote": "EvoAgent can be considered as a one-shot agent generation method that starts from a specialized agent as the initial agent, and then considers its settings (e.g., role, skills, prompts, and so on) as the variables to be evolved."
+          },
+          {
+            "block_id": "b00015",
+            "quote": "Thus, we can employ LLM to simulate evolutionary operators to update the system settings of agents and create new agents."
+          }
+        ]
+      },
+      {
+        "id": "c004",
+        "text": "交叉依据父代回答检查并更新技能；变异要求增加父子代差异并保持求解能力；LLM 质量检查关注特征继承与差异性，每轮选择 N 个子代。",
+        "evidence": [
+          {
+            "block_id": "b00017",
+            "quote": "For Crossover , we first enable the parent agents to generate results based on user requests. Then, based on the generated results, we ask LLMs to check which skills should be improved and then update them."
+          },
+          {
+            "block_id": "b00017",
+            "quote": "we design a Mutation operation that requires LLMs to compare the child agents and parent agents and then modify the child agents to make them distinct from their parents while maintaining their task-solving capability."
+          },
+          {
+            "block_id": "b00018",
+            "quote": "Here, we conduct a quality-check module with an LLM to detect whether the generated agents can satisfy it has inherited the characteristics and maintained differences from parent agents. We will select N child agents as the evolved agents in each iteration."
+          }
+        ]
+      },
+      {
+        "id": "c005",
+        "text": "子智能体生成候选答案，LLM 将候选与上一轮结果整合；上一代生成的智能体加入下一轮，重复进化、选择与结果更新，直到达到目标数量。",
+        "evidence": [
+          {
+            "block_id": "b00019",
+            "quote": "we ask each child agent to generate candidate results and then use LLMs to integrate these candidates with the result from the previous iteration into a new result, akin to a natural selection processing stage."
+          },
+          {
+            "block_id": "b00017",
+            "quote": "Besides, as we also need to conduct multiple iterations, we will append all agents generated in the previous generation into the next iteration."
+          },
+          {
+            "block_id": "b00019",
+            "quote": "Moreover, we can automatically generate more agents by repeating the operations from step 2 to step 4 until the number of agents has fulfilled our targets."
+          }
+        ]
+      }
+    ],
+    "author_contributions": [
+      {
+        "id": "c006",
+        "text": "作者自述提出通用的进化式多智能体生成方法，无需额外人工监督即可产生智能体种群，并声称适用于任意智能体框架。",
+        "evidence": [
+          {
+            "block_id": "b00007",
+            "quote": "We introduce EvoAgent , a simple and generic multi-agent generation method to improve the effectiveness of LLM-based agents in solving tasks. EvoAgent can automatically generate new specialized agents and is applicable to any agent framework."
+          },
+          {
+            "block_id": "b00008",
+            "quote": "We formulate the agent generation processing as an evolutionary pipeline, that encompasses multiple operators (e.g., selection, crossover, mutation) to generate agent population without additional human supervision."
+          }
+        ]
+      }
+    ],
+    "reported_comparisons": [
+      {
+        "id": "c007",
+        "text": "表1的 GPT-4 分组中，EvoAgent 的 Logic／Writing／Code 得分为77.00／84.40／84.53，高于 AutoAgents 的69.00／82.00／83.56及 AgentVerse 的66.50／78.00／80.41。",
+        "evidence": [
+          {
+            "block_id": "b00023",
+            "quote": "Model Method Logic Writing Code"
+          },
+          {
+            "block_id": "b00023",
+            "quote": "GPT-4 Direct 60.50 75.40 79.38 CoT 65.50 74.00 80.41 SPP 64.50 79.20 78.35 Self-Refine 3 64.50 74.60 79.38 AgentVerse 66.50 78.00 80.41 AutoAgents 69.00 82.00 83.56 EvoAgent (1,3) 77.00 84.40 84.53"
+          }
+        ]
+      },
+      {
+        "id": "c008",
+        "text": "TravelPlanner 消融中，EvoAgent (1,3) 的 Com./Hard 为68.9/14.0，Direct 为59.5/13.7，Suggest 3 为61.7/8.4，Overgen 3 为61.4/10.7，PromptRefine 3 为63.0/13.8；结果为两种模型的平均值。",
+        "evidence": [
+          {
+            "block_id": "b00054",
+            "quote": "Direct - - 59.5 13.7 Suggest 3 - - 61.7 8.4 Overgen 3 - - 61.4 10.7 PromptRefine 3 - - 63.0 13.8 Different Population Size EvoAgent (1,3) 68.9 14.0 68.9 14.0"
+          },
+          {
+            "block_id": "b00057",
+            "quote": "To obtain stable findings, we first obtain results from GPT-3.5 and Gemini-Pro across different population sizes and selection strategies. We then average their results over various metrics to clearly compare the strengths and weaknesses of these variants."
+          }
+        ]
+      },
+      {
+        "id": "c009",
+        "text": "作者报告 MMMU 上 Self-Refine 和 SPP 相对 CoT 表现下降，而 EvoAgent 改善不同难度的科学问答表现。",
+        "evidence": [
+          {
+            "block_id": "b00035",
+            "quote": "In addition, Figure 2 shows that Self-Refine (SR) and SPP degrade performance compared to CoT prompting in MMMU task. However, EvoAgent can generate multiple domain-specific agents and thus improve multi-modal models in addressing scientific questions across various difficulty levels."
+          }
+        ]
+      }
+    ],
+    "experiments": [
+      {
+        "id": "c010",
+        "text": "三个 NLP 任务的主实验；Code 指 Codenames Collaborative。",
+        "evidence": [
+          {
+            "block_id": "b00022",
+            "quote": "Results of LLMs with different methods on Logic Grid Puzzle ( Logic ), Trivia Creative Writing ( Writing ) and Codenames Collaborative ( Code )."
+          },
+          {
+            "block_id": "b00025",
+            "quote": "Logic Grid Puzzle is a reasoning task with 200 puzzles featuring 2 to 5 unique occupants in different houses."
+          },
+          {
+            "block_id": "b00026",
+            "quote": "Trivia Creative Writing is a knowledge-intensive task consisting of 100 instances."
+          },
+          {
+            "block_id": "b00027",
+            "quote": "Codenames Collaborative is a reasoning-intensive task with 50 instances."
+          },
+          {
+            "block_id": "b00029",
+            "quote": "For NLP tasks, we select LLama2-13B-Chat Touvron et al. (2023) , GPT-3.5 OpenAI (2022) and GPT-4 OpenAI (2023) as our backbone networks."
+          },
+          {
+            "block_id": "b00023",
+            "quote": "GPT-4 Direct 60.50 75.40 79.38 CoT 65.50 74.00 80.41 SPP 64.50 79.20 78.35 Self-Refine 3 64.50 74.60 79.38 AgentVerse 66.50 78.00 80.41 AutoAgents 69.00 82.00 83.56 EvoAgent (1,3) 77.00 84.40 84.53"
+          },
+          {
+            "block_id": "b00030",
+            "quote": "Specifically, for Logic Grid Puzzle and MMMU tasks, we report the accuracy of all questions."
+          },
+          {
+            "block_id": "b00030",
+            "quote": "For Trivia Creative Writing, we measure the ratio of correctly mentioned answers in the trivia questions. For Codenames Collaborative, we calculate the overlapping ratio between the predicted words from the Guesser and the target words as the metric."
+          },
+          {
+            "block_id": "b00032",
+            "quote": "Here, to align with Self-Refine, we set N as 1 and T as 3, which means we conduct three iterations, each of which generates a new specialized agent. Thus, for each data sample, EvoAgent extends 3 different specialized agents to collaborate with the initial agent."
+          }
+        ],
+        "task": "Logic Grid Puzzle：200题；Trivia Creative Writing：100例；Codenames Collaborative：50例。",
+        "model": "LLama2-13B-Chat、GPT-3.5、GPT-4。",
+        "baseline": "Direct、CoT、SPP、Self-Refine、AgentVerse、AutoAgents。",
+        "metric": "依次为答案准确率、正确提及问答答案的比例、猜测词与目标词的重叠比例。",
+        "result": "GPT-4 下 EvoAgent 三项得分为77.00／84.40／84.53；AutoAgents 为69.00／82.00／83.56；AgentVerse 为66.50／78.00／80.41。",
+        "resource_conditions": "N=1、T=3；每个样本新增3个专业智能体与初始智能体协作；迭代数用于对齐 Self-Refine。"
+      },
+      {
+        "id": "c011",
+        "text": "MMMU 多模态问答实验；所给文本支持定性结果。",
+        "evidence": [
+          {
+            "block_id": "b00028",
+            "quote": "MMMU has three levels of difficulty: easy, medium, and hard. We evaluate EvoAgent against baselines using the multiple-choice questions in the validation set of MMMU, which includes 847 questions spanning 30 different domains."
+          },
+          {
+            "block_id": "b00029",
+            "quote": "For MMMU, we select GPT-4V Yang et al. (2023) and Gemini-Pro as the backbone and compare EvoAgent with CoT prompting, Self-Refine (SR), and SPP."
+          },
+          {
+            "block_id": "b00030",
+            "quote": "Specifically, for Logic Grid Puzzle and MMMU tasks, we report the accuracy of all questions."
+          },
+          {
+            "block_id": "b00035",
+            "quote": "However, EvoAgent can generate multiple domain-specific agents and thus improve multi-modal models in addressing scientific questions across various difficulty levels."
+          },
+          {
+            "block_id": "b00032",
+            "quote": "In our experiments, we adopt the agent settings of Wang et al. (2023) (for NLP tasks) and Yue et al. (2023) (for MMMU) as the initial agent."
+          },
+          {
+            "block_id": "b00032",
+            "quote": "Here, to align with Self-Refine, we set N as 1 and T as 3, which means we conduct three iterations, each of which generates a new specialized agent. Thus, for each data sample, EvoAgent extends 3 different specialized agents to collaborate with the initial agent."
+          }
+        ],
+        "task": "MMMU 验证集847道选择题，覆盖30个领域及简单、中等、困难三级。",
+        "model": "GPT-4V、Gemini-Pro。",
+        "baseline": "CoT、Self-Refine、SPP。",
+        "metric": "答案准确率。",
+        "result": "作者报告 EvoAgent 改善各难度表现；所给文本未提供具体分数。",
+        "resource_conditions": "采用 Yue 等人的智能体设置作为初始智能体；N=1、T=3，每个样本新增3个专业智能体；迭代数用于对齐 Self-Refine。"
+      },
+      {
+        "id": "c012",
+        "text": "ScienceWorld 总体得分改善，但 GPT-3.5 的中等轨迹组得分下降。",
+        "evidence": [
+          {
+            "block_id": "b00036",
+            "quote": "We evaluate 30 scientific tasks in ScienceWorld to demonstrate the capability of EvoAgent in solving tasks in more challenging open-world environments."
+          },
+          {
+            "block_id": "b00037",
+            "quote": "We also report performance on three difficult-level groups based on the average length of the oracle agent’s trajectories ( Lin et al., 2023 ) ."
+          },
+          {
+            "block_id": "b00041",
+            "quote": "Following Lin et al. (2023) , we require LLMs to perform an action at each step by using in-context learning . For evaluation, each task in ScienceWorld includes some sub-tasks, and we report the results by calculating the completed sub-tasks for the whole task."
+          },
+          {
+            "block_id": "b00042",
+            "quote": "For EvoAgent , we adopt the agent framework with original settings in Lin et al. (2023) as the initial agent. Since each step in ScienceWorld requires using EA, we set the population size N as 1 and the iterations T as 1 for efficiency, denoted as EvoAgent (1,1) ."
+          },
+          {
+            "block_id": "b00038",
+            "quote": "Model Overall Long Medium Short GPT-3.5 17.12 6.28 19.91 27.90 w/ EvoAgent (1,1) 19.02 7.25 18.87 33.26 GPT-4 27.97 10.58 36.00 42.41 w/ EvoAgent (1,1) 30.42 11.38 36.17 48.67"
+          }
+        ],
+        "task": "ScienceWorld 的30个科学任务，逐步执行动作。",
+        "model": "GPT-3.5、GPT-4。",
+        "baseline": "沿用 Lin 等人原始设置的初始智能体。",
+        "metric": "依据完成子任务计算得分；按总体及参考智能体平均轨迹长度分组。",
+        "result": "GPT-3.5 总体17.12→19.02，中等轨迹组19.91→18.87；GPT-4 总体27.97→30.42。",
+        "resource_conditions": "每个环境步骤使用 N=1、T=1；通过上下文学习执行动作。"
+      },
+      {
+        "id": "c013",
+        "text": "TravelPlanner 主实验报告 GPT-4 最终通过率由2.2升至7.2。",
+        "evidence": [
+          {
+            "block_id": "b00070",
+            "quote": "We test EvoAgent and all baselines on the TravelPlanner validation set, which consists of 180 user queries with the collected information."
+          },
+          {
+            "block_id": "b00047",
+            "quote": "Following Xie et al. (2024) , we select Mistral-7B Jiang et al. (2023) , GPT-3.5, Gemini-Pro Team (2023) and GPT-4 as our backbone models. We compare EvoAgent with 0-shot learning (Direct), CoT prompting, ReAcT Yao et al. (2023) , SPP, and Self-Refine within each backbone model."
+          },
+          {
+            "block_id": "b00048",
+            "quote": "For EvoAgent , we adopt the original settings in TravelPlanner as the initial agent. In our main experiment, to fairly compare with Self-Refine, we set the population size N as 1 and the iterations T as 3 for efficiency, denoted as EvoAgent (1,3) ."
+          },
+          {
+            "block_id": "b00040",
+            "quote": "Model Method Delivery Commonsense Hard Constraint Final Rate Micro Macro Micro Macro"
+          },
+          {
+            "block_id": "b00040",
+            "quote": "GPT-4 Direct 100.0 79.4 15.8 27.5 16.1 2.2 CoT 100.0 76.7 11.7 22.4 12.8 2.2 SPP 96.7 70.6 5.6 11.4 7.8 0.6 Self-Refine 3 98.9 75.3 7.2 12.4 7.2 1.1 EvoAgent (1,3) 100.0 81.5 21.1 31.4 18.9 7.2"
+          },
+          {
+            "block_id": "b00071",
+            "quote": "Delivery Rate: Assesses if agents can complete a plan within a limited number of steps (30 in our experimental setting)."
+          },
+          {
+            "block_id": "b00067",
+            "quote": "For OpenAI models, we use gpt-35-turbo and gpt-4-32k with the version of 2024-02-15-preview in Azure. For Gemini-pro, we use Google Gemini-Pro APIs to obtain results. We set the temperature to 0 for all models."
+          }
+        ],
+        "task": "TravelPlanner 验证集180个含已收集信息的用户查询。",
+        "model": "Mistral-7B、GPT-3.5、Gemini-Pro、GPT-4。",
+        "baseline": "Direct、CoT、SPP、Self-Refine；GPT-3.5 另比较 ReAct。",
+        "metric": "交付率、常识约束通过率、硬约束通过率、最终通过率；约束指标区分 micro 和 macro。",
+        "result": "GPT-4：Direct 最终通过率2.2，EvoAgent 为7.2；EvoAgent 交付率100.0，常识 micro/macro 为81.5/21.1，硬约束 micro/macro 为31.4/18.9。",
+        "resource_conditions": "N=1、T=3；交付步数上限30；温度0；OpenAI 模型使用 Azure gpt-35-turbo、gpt-4-32k，版本标记2024-02-15-preview。"
+      },
+      {
+        "id": "c014",
+        "text": "TravelPlanner 消融比较质量检查、种群规模、迭代数及候选选择策略；不同配置的指标变化并不一致。",
+        "evidence": [
+          {
+            "block_id": "b00053",
+            "quote": "Table 4: Average commonsense constraint pass rate ( Com. ) and hard constraint pass rate ( Hard ) of ablated variants on TravelPlanner."
+          },
+          {
+            "block_id": "b00057",
+            "quote": "To obtain stable findings, we first obtain results from GPT-3.5 and Gemini-Pro across different population sizes and selection strategies. We then average their results over various metrics to clearly compare the strengths and weaknesses of these variants."
+          },
+          {
+            "block_id": "b00054",
+            "quote": "Method w/o QC w/ QC Com. Hard Com. Hard"
+          },
+          {
+            "block_id": "b00054",
+            "quote": "EvoAgent (1,3) 68.9 14.0 68.9 14.0 EvoAgent (1,5) 67.5 16.9 67.5 16.9 EvoAgent (2,3) 62.8 12.7 67.0 15.2 EvoAgent (3,3) 62.7 13.7 66.8 15.8"
+          },
+          {
+            "block_id": "b00054",
+            "quote": "Different Selection Stategies Random 62.9 12.7 67.1 15.0 PK 63.5 13.6 66.4 14.5 All-in 61.9 13.2 67.1 17.0"
+          }
+        ],
+        "task": "TravelPlanner 消融。",
+        "model": "GPT-3.5 与 Gemini-Pro，报告二者平均结果。",
+        "baseline": "无质量检查版本；Random、PK、All-in 候选选择策略。",
+        "metric": "常识约束通过率 Com.、硬约束通过率 Hard；所给文本未明确 micro/macro 口径。",
+        "result": "N=2、T=3 时，质量检查使 Com./Hard 从62.8/12.7升至67.0/15.2；有质量检查时 Random、PK、All-in 分别为67.1/15.0、66.4/14.5、67.1/17.0。",
+        "resource_conditions": "比较 (N,T)=(1,3)、(1,5)、(2,3)、(3,3)。"
+      },
+      {
+        "id": "c015",
+        "text": "时间实验同时报告任务得分与耗时；EvoAgent 在三个任务上均比 Direct 得分更高、耗时更多。",
+        "evidence": [
+          {
+            "block_id": "b00078",
+            "quote": "We conduct experiments on Logic Grid Puzzle (Logic), Trivia Creative Writing (Writing), and Codenames Collaborative (Code) by using Llama-3.1-70B-Instruct Dubey et al. (2024) with SGLang ."
+          },
+          {
+            "block_id": "b00078",
+            "quote": "Specifically, we deploy Llama-3.1-70B-Instruct on an 8-GPU setup using RTX 3090 (bf16)."
+          },
+          {
+            "block_id": "b00077",
+            "quote": "Method Logic Logic Time (s) Writing Writing Time (s) Code Code Time (s) Direct 50.00 318.00 56.40 441.00 64.32 168.00"
+          },
+          {
+            "block_id": "b00077",
+            "quote": "AgentVerse 60.00 1056.00 70.40 1518.00 68.90 824.40 AutoAgents 61.50 988.80 69.60 1303.80 68.35 770.40 EvoAgent 67.00 1060.80 74.50 1209.60 74.62 859.20"
+          },
+          {
+            "block_id": "b00078",
+            "quote": "When compared to multi-agent systems such as AgentVerse and AutoAgents, EvoAgent achieves similar time costs while producing the best performance."
+          }
+        ],
+        "task": "Logic Grid Puzzle、Trivia Creative Writing、Codenames Collaborative。",
+        "model": "Llama-3.1-70B-Instruct。",
+        "baseline": "Direct、AgentVerse、AutoAgents。",
+        "metric": "任务得分及时间（秒）；所给文本未明确时间聚合口径。",
+        "result": "依任务顺序，EvoAgent 得分/秒为67.00/1060.80、74.50/1209.60、74.62/859.20；Direct 为50.00/318.00、56.40/441.00、64.32/168.00。作者称其与 AgentVerse、AutoAgents 时间成本相近。",
+        "resource_conditions": "SGLang；8张 RTX 3090；bf16。"
+      }
+    ],
+    "limitations": [
+      {
+        "id": "c016",
+        "text": "作者承认生成多个专业智能体会增加 token 成本；除 AgentVerse、AutoAgents 外未广泛比较已有多智能体框架；未人工评估生成智能体质量。",
+        "evidence": [
+          {
+            "block_id": "b00062",
+            "quote": "First, EvoAgent requires the model to generate multiple specialized agents, which brings more token cost than a single agent."
+          },
+          {
+            "block_id": "b00062",
+            "quote": "Besides, except for AgentVerse and AutoAgents in Table 1 , we do not conduct extensive comparisons with existing multi-agent systems frameworks."
+          },
+          {
+            "block_id": "b00062",
+            "quote": "Finally, we do not manually evaluate the quality of the generated agents"
+          }
+        ]
+      },
+      {
+        "id": "c017",
+        "text": "作者指出 ScienceWorld 中长轨迹收益较小；在 TravelPlanner 缺少质量检查且采用 All-in 的分析中，不适合的角色可能产生过长计划，导致上下文溢出、无法生成最终结果。",
+        "evidence": [
+          {
+            "block_id": "b00044",
+            "quote": "Our method exhibits the most substantial improvement in short-trajectory tasks, with less significant gains in medium and long-trajectory tasks."
+          },
+          {
+            "block_id": "b00082",
+            "quote": "This result indicates that the absence of the quality-check module significantly lowers the delivery pass rate when the All-in strategy is applied."
+          },
+          {
+            "block_id": "b00082",
+            "quote": "we revisit the results and discover that sometimes unsuitable agents create overly lengthy travel plans that fail to meet the criteria."
+          },
+          {
+            "block_id": "b00082",
+            "quote": "Therefore, the input length surpasses the context window of LLMs, preventing the final result generation."
+          }
+        ]
+      },
+      {
+        "id": "c018",
+        "text": "GPT-3.5 的 Trivia Creative Writing 迭代实验中，作者报告超过三轮后收益趋于平台，并推测生成智能体趋于相似；TravelPlanner 从(1,3)增至(1,5)时，Com.下降而 Hard 上升。",
+        "evidence": [
+          {
+            "block_id": "b00081",
+            "quote": "Table 7: The performance of GPT-3.5 with EvoAgent under different iterations on Trivia Creative Writing task."
+          },
+          {
+            "block_id": "b00083",
+            "quote": "However, the improvement plateaus when the iteration count exceeds three. We suggest that traditional NLP tasks are relatively simple, and beyond a certain iteration number, even with a quality-check module in place, the generated agents tend to be similar and thus converge."
+          },
+          {
+            "block_id": "b00054",
+            "quote": "EvoAgent (1,3) 68.9 14.0 68.9 14.0 EvoAgent (1,5) 67.5 16.9 67.5 16.9"
+          }
+        ]
+      }
+    ],
+    "multi_agent": {
+      "roles": {
+        "id": "c019",
+        "text": "角色由已有智能体设置进化产生；按作者描述，每个查询生成 N×T 个不同专业智能体，与初始智能体协作。",
+        "evidence": [
+          {
+            "block_id": "b00005",
+            "quote": "EvoAgent can be considered as a one-shot agent generation method that starts from a specialized agent as the initial agent, and then considers its settings (e.g., role, skills, prompts, and so on) as the variables to be evolved."
+          },
+          {
+            "block_id": "b00055",
+            "quote": "For each query, EvoAgent can generate N \\times T different specialized agents to collaborate with the initial agent."
+          }
+        ]
+      },
+      "coordination": {
+        "id": "c020",
+        "text": "子智能体各自生成候选结果，由 LLM 将候选与上一轮结果整合。",
+        "evidence": [
+          {
+            "block_id": "b00019",
+            "quote": "we ask each child agent to generate candidate results and then use LLMs to integrate these candidates with the result from the previous iteration into a new result"
+          }
+        ]
+      },
+      "communication": {
+        "id": "c021",
+        "text": "主流程传递候选结果供整合；AutoGen 适配示例另由群聊管理器选择发言者、收集回答并分发消息。",
+        "evidence": [
+          {
+            "block_id": "b00019",
+            "quote": "we ask each child agent to generate candidate results and then use LLMs to integrate these candidates with the result from the previous iteration into a new result"
+          },
+          {
+            "block_id": "b00092",
+            "quote": "Then, a group chat manager is responsible for selecting a speaker, gathering responses, and disseminating the message."
+          }
+        ]
+      },
+      "shared_memory": null,
+      "scheduling": {
+        "id": "c022",
+        "text": "按代迭代，每轮选择 N 个子代；上一代生成的智能体加入下一轮，直到达到目标数量。",
+        "evidence": [
+          {
+            "block_id": "b00018",
+            "quote": "We will select N child agents as the evolved agents in each iteration."
+          },
+          {
+            "block_id": "b00017",
+            "quote": "Besides, as we also need to conduct multiple iterations, we will append all agents generated in the previous generation into the next iteration."
+          },
+          {
+            "block_id": "b00019",
+            "quote": "Moreover, we can automatically generate more agents by repeating the operations from step 2 to step 4 until the number of agents has fulfilled our targets."
+          }
+        ]
+      },
+      "equal_budget_single_agent_comparison": null
+    },
+    "self_evolution": {
+      "changed_object": {
+        "id": "c023",
+        "text": "进化对象是角色、技能、提示词等智能体设置。",
+        "evidence": [
+          {
+            "block_id": "b00005",
+            "quote": "EvoAgent can be considered as a one-shot agent generation method that starts from a specialized agent as the initial agent, and then considers its settings (e.g., role, skills, prompts, and so on) as the variables to be evolved."
+          }
+        ]
+      },
+      "feedback": {
+        "id": "c024",
+        "text": "LLM 根据父代对当前请求的回答判断需改进的技能；质量检查另判断子代是否继承父代特征并保持差异。",
+        "evidence": [
+          {
+            "block_id": "b00017",
+            "quote": "For Crossover , we first enable the parent agents to generate results based on user requests. Then, based on the generated results, we ask LLMs to check which skills should be improved and then update them."
+          },
+          {
+            "block_id": "b00018",
+            "quote": "Here, we conduct a quality-check module with an LLM to detect whether the generated agents can satisfy it has inherited the characteristics and maintained differences from parent agents."
+          }
+        ]
+      },
+      "update_method": {
+        "id": "c025",
+        "text": "LLM 模拟进化算子更新智能体设置；结果更新采用与初始智能体相同骨干的 LLM。",
+        "evidence": [
+          {
+            "block_id": "b00015",
+            "quote": "Thus, we can employ LLM to simulate evolutionary operators to update the system settings of agents and create new agents."
+          },
+          {
+            "block_id": "b00055",
+            "quote": "We employ an LLM that shares the same backbone as the initial agent for updates."
+          }
+        ]
+      },
+      "stage": {
+        "id": "c026",
+        "text": "进化在处理每个查询时展开；ScienceWorld 在每个环境步骤应用进化操作。",
+        "evidence": [
+          {
+            "block_id": "b00055",
+            "quote": "For each query, EvoAgent can generate N \\times T different specialized agents to collaborate with the initial agent."
+          },
+          {
+            "block_id": "b00042",
+            "quote": "Since each step in ScienceWorld requires using EA, we set the population size N as 1 and the iterations T as 1 for efficiency, denoted as EvoAgent (1,1) ."
+          }
+        ]
+      },
+      "retention": {
+        "id": "c027",
+        "text": "任务内跨轮保留：上一代智能体加入下一轮，上一轮结果参与后续整合。",
+        "evidence": [
+          {
+            "block_id": "b00017",
+            "quote": "Besides, as we also need to conduct multiple iterations, we will append all agents generated in the previous generation into the next iteration."
+          },
+          {
+            "block_id": "b00019",
+            "quote": "we ask each child agent to generate candidate results and then use LLMs to integrate these candidates with the result from the previous iteration into a new result"
+          }
+        ]
+      },
+      "held_out_validation": null
+    },
+    "system_insights": [
+      "系统分析：依据 c023—c027，机制可理解为查询内的智能体配置搜索与答案整合；这些证据不足以认定模型权重更新或跨任务持续学习。",
+      "系统分析：c010、c011、c013 中对齐 Self-Refine 的迭代数不能证明 token、调用数或时间预算相等；c015 的耗时比较也不足以建立严格等预算优势。",
+      "系统分析：c014、c017、c018 提示应同时考察性能、角色差异及上下文成本；不同配置的描述性差异不能视为已通过统计交互检验。"
+    ],
+    "open_questions": [
+      "系统分析问题：严格匹配 token、模型调用数或时间预算后，专业角色生成相对单智能体多候选与提示词优化还能带来多少收益？",
+      "系统分析问题：能否用独立人工评价或可复现评分验证角色差异与任务能力，补充 LLM 质量检查？",
+      "系统分析问题：将生成设置固定后，能否在未参与其进化的独立任务上复用并保持收益？"
+    ],
+    "missing_information": [
+      "所给文本提及 Algorithm 1 及提示词 Listing，但未包含其正文；无法核查完整提示词、精确质量判定规则与可执行算法细节。",
+      "已读文本未明确角色或经验是否跨查询、跨任务持续保留；未发现将进化产物固定后在独立留出任务上验证的证据，因此 held_out_validation 为 null。",
+      "已读文本未明确模型权重更新机制、共享记忆机制及底层并行执行安排；shared_memory 为 null。",
+      "已读文本未建立严格等 token、等调用数或等时间预算的单智能体对照，因此 equal_budget_single_agent_comparison 为 null。",
+      "所给文本未包含 MMMU 图2的具体分数及 GPT-3.5 在 Trivia Creative Writing 上的逐轮性能数值。",
+      "所给文本未明确表4 Com./Hard 的 micro/macro 统计口径及时间实验的耗时聚合口径。",
+      "已读文本未发现重复运行次数、随机种子、误差范围、显著性检验及精确 token 成本。",
+      "已读文本包含 MetaGPT、Camel、AutoGen 适配描述，但未发现这些适配示例的对应量化评估。",
+      "未独立阅读引用前作，无法确认创新优先权；作者关于任意框架适用性的主张未获独立验证。本次仅依据提供文本修订卡片，未复现实验。"
+    ],
+    "reading_priority": "high",
+    "priority_reason": "系统分析：适合关注自动角色生成与查询内配置进化的读者；c010—c015 提供多任务及消融证据，c016—c018 则明确成本与扩展限制，等预算收益仍值得核查。",
+    "reproduction_status": "not_reproduced"
+  },
+  "evidence": [
+    {
+      "claim_id": "c001",
+      "block_id": "b00004",
+      "quote": "it also limits scaling up the number of agents to further improve performance due to expensive human labor.",
+      "section": "1 Introduction",
+      "page": null,
+      "link": "https://arxiv.org/html/2406.14228v3#S1.p2.1"
+    },
+    {
+      "claim_id": "c001",
+      "block_id": "b00015",
+      "quote": "Thus, we can employ LLM to simulate evolutionary operators to update the system settings of agents and create new agents.",
+      "section": "3.2 EvoAgent",
+      "page": null,
+      "link": "https://arxiv.org/html/2406.14228v3#S3.SS2.p1.1"
+    },
+    {
+      "claim_id": "c001",
+      "block_id": "b00019",
+      "quote": "we ask each child agent to generate candidate results and then use LLMs to integrate these candidates with the result from the previous iteration into a new result",
+      "section": "STEP 4: Results Update",
+      "page": null,
+      "link": "https://arxiv.org/html/2406.14228v3#S3.SS2.SSS0.Px4.p1.1"
+    },
+    {
+      "claim_id": "c001",
+      "block_id": "b00038",
+      "quote": "GPT-4 27.97 10.58 36.00 42.41 w/ EvoAgent (1,1) 30.42 11.38 36.17 48.67",
+      "section": "Benchmark",
+      "page": null,
+      "link": "https://arxiv.org/html/2406.14228v3#S4.T2.2"
+    },
+    {
+      "claim_id": "c002",
+      "block_id": "b00004",
+      "quote": "their designs heavily depend on handcrafted settings, including character roles, task scopes, skills, and prompt settings.",
+      "section": "1 Introduction",
+      "page": null,
+      "link": "https://arxiv.org/html/2406.14228v3#S1.p2.1"
+    },
+    {
+      "claim_id": "c002",
+      "block_id": "b00004",
+      "quote": "it also limits scaling up the number of agents to further improve performance due to expensive human labor.",
+      "section": "1 Introduction",
+      "page": null,
+      "link": "https://arxiv.org/html/2406.14228v3#S1.p2.1"
+    },
+    {
+      "claim_id": "c002",
+      "block_id": "b00005",
+      "quote": "With a series operation of EAs (e.g., selection, crossover, mutation), EvoAgent can automatically create multiple evolutionary agents based on the initial specialized agent.",
+      "section": "1 Introduction",
+      "page": null,
+      "link": "https://arxiv.org/html/2406.14228v3#S1.p3.1"
+    },
+    {
+      "claim_id": "c003",
+      "block_id": "b00016",
+      "quote": "Here, we enable EvoAgent to start from a pre-defined agent framework (e.g., MetaGPT Hong et al. (2024) and AutoGen Wu et al. (2023) ), which serves as the initial (parent) agents.",
+      "section": "STEP 1: Initialization",
+      "page": null,
+      "link": "https://arxiv.org/html/2406.14228v3#S3.SS2.SSS0.Px1.p1.1"
+    },
+    {
+      "claim_id": "c003",
+      "block_id": "b00005",
+      "quote": "EvoAgent can be considered as a one-shot agent generation method that starts from a specialized agent as the initial agent, and then considers its settings (e.g., role, skills, prompts, and so on) as the variables to be evolved.",
+      "section": "1 Introduction",
+      "page": null,
+      "link": "https://arxiv.org/html/2406.14228v3#S1.p3.1"
+    },
+    {
+      "claim_id": "c003",
+      "block_id": "b00015",
+      "quote": "Thus, we can employ LLM to simulate evolutionary operators to update the system settings of agents and create new agents.",
+      "section": "3.2 EvoAgent",
+      "page": null,
+      "link": "https://arxiv.org/html/2406.14228v3#S3.SS2.p1.1"
+    },
+    {
+      "claim_id": "c004",
+      "block_id": "b00017",
+      "quote": "For Crossover , we first enable the parent agents to generate results based on user requests. Then, based on the generated results, we ask LLMs to check which skills should be improved and then update them.",
+      "section": "STEP 2: Crossover & Mutation",
+      "page": null,
+      "link": "https://arxiv.org/html/2406.14228v3#S3.SS2.SSS0.Px2.p1.1"
+    },
+    {
+      "claim_id": "c004",
+      "block_id": "b00017",
+      "quote": "we design a Mutation operation that requires LLMs to compare the child agents and parent agents and then modify the child agents to make them distinct from their parents while maintaining their task-solving capability.",
+      "section": "STEP 2: Crossover & Mutation",
+      "page": null,
+      "link": "https://arxiv.org/html/2406.14228v3#S3.SS2.SSS0.Px2.p1.1"
+    },
+    {
+      "claim_id": "c004",
+      "block_id": "b00018",
+      "quote": "Here, we conduct a quality-check module with an LLM to detect whether the generated agents can satisfy it has inherited the characteristics and maintained differences from parent agents. We will select N child agents as the evolved agents in each iteration.",
+      "section": "STEP 3: Selection",
+      "page": null,
+      "link": "https://arxiv.org/html/2406.14228v3#S3.SS2.SSS0.Px3.p1.1"
+    },
+    {
+      "claim_id": "c005",
+      "block_id": "b00019",
+      "quote": "we ask each child agent to generate candidate results and then use LLMs to integrate these candidates with the result from the previous iteration into a new result, akin to a natural selection processing stage.",
+      "section": "STEP 4: Results Update",
+      "page": null,
+      "link": "https://arxiv.org/html/2406.14228v3#S3.SS2.SSS0.Px4.p1.1"
+    },
+    {
+      "claim_id": "c005",
+      "block_id": "b00017",
+      "quote": "Besides, as we also need to conduct multiple iterations, we will append all agents generated in the previous generation into the next iteration.",
+      "section": "STEP 2: Crossover & Mutation",
+      "page": null,
+      "link": "https://arxiv.org/html/2406.14228v3#S3.SS2.SSS0.Px2.p1.1"
+    },
+    {
+      "claim_id": "c005",
+      "block_id": "b00019",
+      "quote": "Moreover, we can automatically generate more agents by repeating the operations from step 2 to step 4 until the number of agents has fulfilled our targets.",
+      "section": "STEP 4: Results Update",
+      "page": null,
+      "link": "https://arxiv.org/html/2406.14228v3#S3.SS2.SSS0.Px4.p1.1"
+    },
+    {
+      "claim_id": "c006",
+      "block_id": "b00007",
+      "quote": "We introduce EvoAgent , a simple and generic multi-agent generation method to improve the effectiveness of LLM-based agents in solving tasks. EvoAgent can automatically generate new specialized agents and is applicable to any agent framework.",
+      "section": "1 Introduction",
+      "page": null,
+      "link": "https://arxiv.org/html/2406.14228v3#S1.I1.i1.p1.1"
+    },
+    {
+      "claim_id": "c006",
+      "block_id": "b00008",
+      "quote": "We formulate the agent generation processing as an evolutionary pipeline, that encompasses multiple operators (e.g., selection, crossover, mutation) to generate agent population without additional human supervision.",
+      "section": "1 Introduction",
+      "page": null,
+      "link": "https://arxiv.org/html/2406.14228v3#S1.I1.i2.p1.1"
+    },
+    {
+      "claim_id": "c007",
+      "block_id": "b00023",
+      "quote": "Model Method Logic Writing Code",
+      "section": "4.1 NLP and Multi-Modal Tasks",
+      "page": null,
+      "link": "https://arxiv.org/html/2406.14228v3#S4.T1.12"
+    },
+    {
+      "claim_id": "c007",
+      "block_id": "b00023",
+      "quote": "GPT-4 Direct 60.50 75.40 79.38 CoT 65.50 74.00 80.41 SPP 64.50 79.20 78.35 Self-Refine 3 64.50 74.60 79.38 AgentVerse 66.50 78.00 80.41 AutoAgents 69.00 82.00 83.56 EvoAgent (1,3) 77.00 84.40 84.53",
+      "section": "4.1 NLP and Multi-Modal Tasks",
+      "page": null,
+      "link": "https://arxiv.org/html/2406.14228v3#S4.T1.12"
+    },
+    {
+      "claim_id": "c008",
+      "block_id": "b00054",
+      "quote": "Direct - - 59.5 13.7 Suggest 3 - - 61.7 8.4 Overgen 3 - - 61.4 10.7 PromptRefine 3 - - 63.0 13.8 Different Population Size EvoAgent (1,3) 68.9 14.0 68.9 14.0",
+      "section": "4.4 Ablation Studies",
+      "page": null,
+      "link": "https://arxiv.org/html/2406.14228v3#S4.T4.6"
+    },
+    {
+      "claim_id": "c008",
+      "block_id": "b00057",
+      "quote": "To obtain stable findings, we first obtain results from GPT-3.5 and Gemini-Pro across different population sizes and selection strategies. We then average their results over various metrics to clearly compare the strengths and weaknesses of these variants.",
+      "section": "Result & Analysis",
+      "page": null,
+      "link": "https://arxiv.org/html/2406.14228v3#S4.SS4.SSS0.Px2.p1.1"
+    },
+    {
+      "claim_id": "c009",
+      "block_id": "b00035",
+      "quote": "In addition, Figure 2 shows that Self-Refine (SR) and SPP degrade performance compared to CoT prompting in MMMU task. However, EvoAgent can generate multiple domain-specific agents and thus improve multi-modal models in addressing scientific questions across various difficulty levels.",
+      "section": "Result & Analysis",
+      "page": null,
+      "link": "https://arxiv.org/html/2406.14228v3#S4.SS1.SSS0.Px4.p1.2"
+    },
+    {
+      "claim_id": "c010",
+      "block_id": "b00022",
+      "quote": "Results of LLMs with different methods on Logic Grid Puzzle ( Logic ), Trivia Creative Writing ( Writing ) and Codenames Collaborative ( Code ).",
+      "section": "4.1 NLP and Multi-Modal Tasks",
+      "page": null,
+      "link": "https://arxiv.org/html/2406.14228v3#S4.T1"
+    },
+    {
+      "claim_id": "c010",
+      "block_id": "b00025",
+      "quote": "Logic Grid Puzzle is a reasoning task with 200 puzzles featuring 2 to 5 unique occupants in different houses.",
+      "section": "Benchmarks",
+      "page": null,
+      "link": "https://arxiv.org/html/2406.14228v3#S4.I1.i1.p1.1"
+    },
+    {
+      "claim_id": "c010",
+      "block_id": "b00026",
+      "quote": "Trivia Creative Writing is a knowledge-intensive task consisting of 100 instances.",
+      "section": "Benchmarks",
+      "page": null,
+      "link": "https://arxiv.org/html/2406.14228v3#S4.I1.i2.p1.1"
+    },
+    {
+      "claim_id": "c010",
+      "block_id": "b00027",
+      "quote": "Codenames Collaborative is a reasoning-intensive task with 50 instances.",
+      "section": "Benchmarks",
+      "page": null,
+      "link": "https://arxiv.org/html/2406.14228v3#S4.I1.i3.p1.1"
+    },
+    {
+      "claim_id": "c010",
+      "block_id": "b00029",
+      "quote": "For NLP tasks, we select LLama2-13B-Chat Touvron et al. (2023) , GPT-3.5 OpenAI (2022) and GPT-4 OpenAI (2023) as our backbone networks.",
+      "section": "Baselines",
+      "page": null,
+      "link": "https://arxiv.org/html/2406.14228v3#S4.SS1.SSS0.Px2.p1.1"
+    },
+    {
+      "claim_id": "c010",
+      "block_id": "b00023",
+      "quote": "GPT-4 Direct 60.50 75.40 79.38 CoT 65.50 74.00 80.41 SPP 64.50 79.20 78.35 Self-Refine 3 64.50 74.60 79.38 AgentVerse 66.50 78.00 80.41 AutoAgents 69.00 82.00 83.56 EvoAgent (1,3) 77.00 84.40 84.53",
+      "section": "4.1 NLP and Multi-Modal Tasks",
+      "page": null,
+      "link": "https://arxiv.org/html/2406.14228v3#S4.T1.12"
+    },
+    {
+      "claim_id": "c010",
+      "block_id": "b00030",
+      "quote": "Specifically, for Logic Grid Puzzle and MMMU tasks, we report the accuracy of all questions.",
+      "section": "Evaluation Metrics",
+      "page": null,
+      "link": "https://arxiv.org/html/2406.14228v3#S4.SS1.SSS0.Px3.p1.1"
+    },
+    {
+      "claim_id": "c010",
+      "block_id": "b00030",
+      "quote": "For Trivia Creative Writing, we measure the ratio of correctly mentioned answers in the trivia questions. For Codenames Collaborative, we calculate the overlapping ratio between the predicted words from the Guesser and the target words as the metric.",
+      "section": "Evaluation Metrics",
+      "page": null,
+      "link": "https://arxiv.org/html/2406.14228v3#S4.SS1.SSS0.Px3.p1.1"
+    },
+    {
+      "claim_id": "c010",
+      "block_id": "b00032",
+      "quote": "Here, to align with Self-Refine, we set N as 1 and T as 3, which means we conduct three iterations, each of which generates a new specialized agent. Thus, for each data sample, EvoAgent extends 3 different specialized agents to collaborate with the initial agent.",
+      "section": "Result & Analysis",
+      "page": null,
+      "link": "https://arxiv.org/html/2406.14228v3#S4.SS1.SSS0.Px4.p1.1"
+    },
+    {
+      "claim_id": "c011",
+      "block_id": "b00028",
+      "quote": "MMMU has three levels of difficulty: easy, medium, and hard. We evaluate EvoAgent against baselines using the multiple-choice questions in the validation set of MMMU, which includes 847 questions spanning 30 different domains.",
+      "section": "Benchmarks",
+      "page": null,
+      "link": "https://arxiv.org/html/2406.14228v3#S4.I1.i4.p1.1"
+    },
+    {
+      "claim_id": "c011",
+      "block_id": "b00029",
+      "quote": "For MMMU, we select GPT-4V Yang et al. (2023) and Gemini-Pro as the backbone and compare EvoAgent with CoT prompting, Self-Refine (SR), and SPP.",
+      "section": "Baselines",
+      "page": null,
+      "link": "https://arxiv.org/html/2406.14228v3#S4.SS1.SSS0.Px2.p1.1"
+    },
+    {
+      "claim_id": "c011",
+      "block_id": "b00030",
+      "quote": "Specifically, for Logic Grid Puzzle and MMMU tasks, we report the accuracy of all questions.",
+      "section": "Evaluation Metrics",
+      "page": null,
+      "link": "https://arxiv.org/html/2406.14228v3#S4.SS1.SSS0.Px3.p1.1"
+    },
+    {
+      "claim_id": "c011",
+      "block_id": "b00035",
+      "quote": "However, EvoAgent can generate multiple domain-specific agents and thus improve multi-modal models in addressing scientific questions across various difficulty levels.",
+      "section": "Result & Analysis",
+      "page": null,
+      "link": "https://arxiv.org/html/2406.14228v3#S4.SS1.SSS0.Px4.p1.2"
+    },
+    {
+      "claim_id": "c011",
+      "block_id": "b00032",
+      "quote": "In our experiments, we adopt the agent settings of Wang et al. (2023) (for NLP tasks) and Yue et al. (2023) (for MMMU) as the initial agent.",
+      "section": "Result & Analysis",
+      "page": null,
+      "link": "https://arxiv.org/html/2406.14228v3#S4.SS1.SSS0.Px4.p1.1"
+    },
+    {
+      "claim_id": "c011",
+      "block_id": "b00032",
+      "quote": "Here, to align with Self-Refine, we set N as 1 and T as 3, which means we conduct three iterations, each of which generates a new specialized agent. Thus, for each data sample, EvoAgent extends 3 different specialized agents to collaborate with the initial agent.",
+      "section": "Result & Analysis",
+      "page": null,
+      "link": "https://arxiv.org/html/2406.14228v3#S4.SS1.SSS0.Px4.p1.1"
+    },
+    {
+      "claim_id": "c012",
+      "block_id": "b00036",
+      "quote": "We evaluate 30 scientific tasks in ScienceWorld to demonstrate the capability of EvoAgent in solving tasks in more challenging open-world environments.",
+      "section": "Benchmark",
+      "page": null,
+      "link": "https://arxiv.org/html/2406.14228v3#S4.SS2.SSS0.Px1.p1.1"
+    },
+    {
+      "claim_id": "c012",
+      "block_id": "b00037",
+      "quote": "We also report performance on three difficult-level groups based on the average length of the oracle agent’s trajectories ( Lin et al., 2023 ) .",
+      "section": "Benchmark",
+      "page": null,
+      "link": "https://arxiv.org/html/2406.14228v3#S4.T2"
+    },
+    {
+      "claim_id": "c012",
+      "block_id": "b00041",
+      "quote": "Following Lin et al. (2023) , we require LLMs to perform an action at each step by using in-context learning . For evaluation, each task in ScienceWorld includes some sub-tasks, and we report the results by calculating the completed sub-tasks for the whole task.",
+      "section": "Baseline and Evaluation Metrics",
+      "page": null,
+      "link": "https://arxiv.org/html/2406.14228v3#S4.SS2.SSS0.Px2.p1.1"
+    },
+    {
+      "claim_id": "c012",
+      "block_id": "b00042",
+      "quote": "For EvoAgent , we adopt the agent framework with original settings in Lin et al. (2023) as the initial agent. Since each step in ScienceWorld requires using EA, we set the population size N as 1 and the iterations T as 1 for efficiency, denoted as EvoAgent (1,1) .",
+      "section": "Result & Analysis",
+      "page": null,
+      "link": "https://arxiv.org/html/2406.14228v3#S4.SS2.SSS0.Px3.p1.1"
+    },
+    {
+      "claim_id": "c012",
+      "block_id": "b00038",
+      "quote": "Model Overall Long Medium Short GPT-3.5 17.12 6.28 19.91 27.90 w/ EvoAgent (1,1) 19.02 7.25 18.87 33.26 GPT-4 27.97 10.58 36.00 42.41 w/ EvoAgent (1,1) 30.42 11.38 36.17 48.67",
+      "section": "Benchmark",
+      "page": null,
+      "link": "https://arxiv.org/html/2406.14228v3#S4.T2.2"
+    },
+    {
+      "claim_id": "c013",
+      "block_id": "b00070",
+      "quote": "We test EvoAgent and all baselines on the TravelPlanner validation set, which consists of 180 user queries with the collected information.",
+      "section": "A.5 Evaluation Details of TravelPlanner",
+      "page": null,
+      "link": "https://arxiv.org/html/2406.14228v3#A1.SS5.p1.1"
+    },
+    {
+      "claim_id": "c013",
+      "block_id": "b00047",
+      "quote": "Following Xie et al. (2024) , we select Mistral-7B Jiang et al. (2023) , GPT-3.5, Gemini-Pro Team (2023) and GPT-4 as our backbone models. We compare EvoAgent with 0-shot learning (Direct), CoT prompting, ReAcT Yao et al. (2023) , SPP, and Self-Refine within each backbone model.",
+      "section": "Baseline and Evaluation Metrics",
+      "page": null,
+      "link": "https://arxiv.org/html/2406.14228v3#S4.SS3.SSS0.Px2.p1.1"
+    },
+    {
+      "claim_id": "c013",
+      "block_id": "b00048",
+      "quote": "For EvoAgent , we adopt the original settings in TravelPlanner as the initial agent. In our main experiment, to fairly compare with Self-Refine, we set the population size N as 1 and the iterations T as 3 for efficiency, denoted as EvoAgent (1,3) .",
+      "section": "Result & Analysis",
+      "page": null,
+      "link": "https://arxiv.org/html/2406.14228v3#S4.SS3.SSS0.Px3.p1.1"
+    },
+    {
+      "claim_id": "c013",
+      "block_id": "b00040",
+      "quote": "Model Method Delivery Commonsense Hard Constraint Final Rate Micro Macro Micro Macro",
+      "section": "Benchmark",
+      "page": null,
+      "link": "https://arxiv.org/html/2406.14228v3#S4.T3.8"
+    },
+    {
+      "claim_id": "c013",
+      "block_id": "b00040",
+      "quote": "GPT-4 Direct 100.0 79.4 15.8 27.5 16.1 2.2 CoT 100.0 76.7 11.7 22.4 12.8 2.2 SPP 96.7 70.6 5.6 11.4 7.8 0.6 Self-Refine 3 98.9 75.3 7.2 12.4 7.2 1.1 EvoAgent (1,3) 100.0 81.5 21.1 31.4 18.9 7.2",
+      "section": "Benchmark",
+      "page": null,
+      "link": "https://arxiv.org/html/2406.14228v3#S4.T3.8"
+    },
+    {
+      "claim_id": "c013",
+      "block_id": "b00071",
+      "quote": "Delivery Rate: Assesses if agents can complete a plan within a limited number of steps (30 in our experimental setting).",
+      "section": "A.5 Evaluation Details of TravelPlanner",
+      "page": null,
+      "link": "https://arxiv.org/html/2406.14228v3#A1.I1.i1.p1.1"
+    },
+    {
+      "claim_id": "c013",
+      "block_id": "b00067",
+      "quote": "For OpenAI models, we use gpt-35-turbo and gpt-4-32k with the version of 2024-02-15-preview in Azure. For Gemini-pro, we use Google Gemini-Pro APIs to obtain results. We set the temperature to 0 for all models.",
+      "section": "A.2 Model Selection",
+      "page": null,
+      "link": "https://arxiv.org/html/2406.14228v3#A1.SS2.p1.1"
+    },
+    {
+      "claim_id": "c014",
+      "block_id": "b00053",
+      "quote": "Table 4: Average commonsense constraint pass rate ( Com. ) and hard constraint pass rate ( Hard ) of ablated variants on TravelPlanner.",
+      "section": "4.4 Ablation Studies",
+      "page": null,
+      "link": "https://arxiv.org/html/2406.14228v3#S4.T4"
+    },
+    {
+      "claim_id": "c014",
+      "block_id": "b00057",
+      "quote": "To obtain stable findings, we first obtain results from GPT-3.5 and Gemini-Pro across different population sizes and selection strategies. We then average their results over various metrics to clearly compare the strengths and weaknesses of these variants.",
+      "section": "Result & Analysis",
+      "page": null,
+      "link": "https://arxiv.org/html/2406.14228v3#S4.SS4.SSS0.Px2.p1.1"
+    },
+    {
+      "claim_id": "c014",
+      "block_id": "b00054",
+      "quote": "Method w/o QC w/ QC Com. Hard Com. Hard",
+      "section": "4.4 Ablation Studies",
+      "page": null,
+      "link": "https://arxiv.org/html/2406.14228v3#S4.T4.6"
+    },
+    {
+      "claim_id": "c014",
+      "block_id": "b00054",
+      "quote": "EvoAgent (1,3) 68.9 14.0 68.9 14.0 EvoAgent (1,5) 67.5 16.9 67.5 16.9 EvoAgent (2,3) 62.8 12.7 67.0 15.2 EvoAgent (3,3) 62.7 13.7 66.8 15.8",
+      "section": "4.4 Ablation Studies",
+      "page": null,
+      "link": "https://arxiv.org/html/2406.14228v3#S4.T4.6"
+    },
+    {
+      "claim_id": "c014",
+      "block_id": "b00054",
+      "quote": "Different Selection Stategies Random 62.9 12.7 67.1 15.0 PK 63.5 13.6 66.4 14.5 All-in 61.9 13.2 67.1 17.0",
+      "section": "4.4 Ablation Studies",
+      "page": null,
+      "link": "https://arxiv.org/html/2406.14228v3#S4.T4.6"
+    },
+    {
+      "claim_id": "c015",
+      "block_id": "b00078",
+      "quote": "We conduct experiments on Logic Grid Puzzle (Logic), Trivia Creative Writing (Writing), and Codenames Collaborative (Code) by using Llama-3.1-70B-Instruct Dubey et al. (2024) with SGLang .",
+      "section": "B.1 Time Efficiency of EvoAgent",
+      "page": null,
+      "link": "https://arxiv.org/html/2406.14228v3#A2.SS1.p1.1"
+    },
+    {
+      "claim_id": "c015",
+      "block_id": "b00078",
+      "quote": "Specifically, we deploy Llama-3.1-70B-Instruct on an 8-GPU setup using RTX 3090 (bf16).",
+      "section": "B.1 Time Efficiency of EvoAgent",
+      "page": null,
+      "link": "https://arxiv.org/html/2406.14228v3#A2.SS1.p1.1"
+    },
+    {
+      "claim_id": "c015",
+      "block_id": "b00077",
+      "quote": "Method Logic Logic Time (s) Writing Writing Time (s) Code Code Time (s) Direct 50.00 318.00 56.40 441.00 64.32 168.00",
+      "section": "Appendix B More Analysis of EvoAgent",
+      "page": null,
+      "link": "https://arxiv.org/html/2406.14228v3#A2.T5.2"
+    },
+    {
+      "claim_id": "c015",
+      "block_id": "b00077",
+      "quote": "AgentVerse 60.00 1056.00 70.40 1518.00 68.90 824.40 AutoAgents 61.50 988.80 69.60 1303.80 68.35 770.40 EvoAgent 67.00 1060.80 74.50 1209.60 74.62 859.20",
+      "section": "Appendix B More Analysis of EvoAgent",
+      "page": null,
+      "link": "https://arxiv.org/html/2406.14228v3#A2.T5.2"
+    },
+    {
+      "claim_id": "c015",
+      "block_id": "b00078",
+      "quote": "When compared to multi-agent systems such as AgentVerse and AutoAgents, EvoAgent achieves similar time costs while producing the best performance.",
+      "section": "B.1 Time Efficiency of EvoAgent",
+      "page": null,
+      "link": "https://arxiv.org/html/2406.14228v3#A2.SS1.p1.1"
+    },
+    {
+      "claim_id": "c016",
+      "block_id": "b00062",
+      "quote": "First, EvoAgent requires the model to generate multiple specialized agents, which brings more token cost than a single agent.",
+      "section": "Limitations",
+      "page": null,
+      "link": "https://arxiv.org/html/2406.14228v3#Sx1.p1.1"
+    },
+    {
+      "claim_id": "c016",
+      "block_id": "b00062",
+      "quote": "Besides, except for AgentVerse and AutoAgents in Table 1 , we do not conduct extensive comparisons with existing multi-agent systems frameworks.",
+      "section": "Limitations",
+      "page": null,
+      "link": "https://arxiv.org/html/2406.14228v3#Sx1.p1.1"
+    },
+    {
+      "claim_id": "c016",
+      "block_id": "b00062",
+      "quote": "Finally, we do not manually evaluate the quality of the generated agents",
+      "section": "Limitations",
+      "page": null,
+      "link": "https://arxiv.org/html/2406.14228v3#Sx1.p1.1"
+    },
+    {
+      "claim_id": "c017",
+      "block_id": "b00044",
+      "quote": "Our method exhibits the most substantial improvement in short-trajectory tasks, with less significant gains in medium and long-trajectory tasks.",
+      "section": "Result & Analysis",
+      "page": null,
+      "link": "https://arxiv.org/html/2406.14228v3#S4.I3.i2.p1.1"
+    },
+    {
+      "claim_id": "c017",
+      "block_id": "b00082",
+      "quote": "This result indicates that the absence of the quality-check module significantly lowers the delivery pass rate when the All-in strategy is applied.",
+      "section": "B.2 More Analysis of Ablation Studies",
+      "page": null,
+      "link": "https://arxiv.org/html/2406.14228v3#A2.SS2.p1.1"
+    },
+    {
+      "claim_id": "c017",
+      "block_id": "b00082",
+      "quote": "we revisit the results and discover that sometimes unsuitable agents create overly lengthy travel plans that fail to meet the criteria.",
+      "section": "B.2 More Analysis of Ablation Studies",
+      "page": null,
+      "link": "https://arxiv.org/html/2406.14228v3#A2.SS2.p1.1"
+    },
+    {
+      "claim_id": "c017",
+      "block_id": "b00082",
+      "quote": "Therefore, the input length surpasses the context window of LLMs, preventing the final result generation.",
+      "section": "B.2 More Analysis of Ablation Studies",
+      "page": null,
+      "link": "https://arxiv.org/html/2406.14228v3#A2.SS2.p1.1"
+    },
+    {
+      "claim_id": "c018",
+      "block_id": "b00081",
+      "quote": "Table 7: The performance of GPT-3.5 with EvoAgent under different iterations on Trivia Creative Writing task.",
+      "section": "B.2 More Analysis of Ablation Studies",
+      "page": null,
+      "link": "https://arxiv.org/html/2406.14228v3#A2.T7"
+    },
+    {
+      "claim_id": "c018",
+      "block_id": "b00083",
+      "quote": "However, the improvement plateaus when the iteration count exceeds three. We suggest that traditional NLP tasks are relatively simple, and beyond a certain iteration number, even with a quality-check module in place, the generated agents tend to be similar and thus converge.",
+      "section": "B.2 More Analysis of Ablation Studies",
+      "page": null,
+      "link": "https://arxiv.org/html/2406.14228v3#A2.SS2.p2.1"
+    },
+    {
+      "claim_id": "c018",
+      "block_id": "b00054",
+      "quote": "EvoAgent (1,3) 68.9 14.0 68.9 14.0 EvoAgent (1,5) 67.5 16.9 67.5 16.9",
+      "section": "4.4 Ablation Studies",
+      "page": null,
+      "link": "https://arxiv.org/html/2406.14228v3#S4.T4.6"
+    },
+    {
+      "claim_id": "c019",
+      "block_id": "b00005",
+      "quote": "EvoAgent can be considered as a one-shot agent generation method that starts from a specialized agent as the initial agent, and then considers its settings (e.g., role, skills, prompts, and so on) as the variables to be evolved.",
+      "section": "1 Introduction",
+      "page": null,
+      "link": "https://arxiv.org/html/2406.14228v3#S1.p3.1"
+    },
+    {
+      "claim_id": "c019",
+      "block_id": "b00055",
+      "quote": "For each query, EvoAgent can generate N \\times T different specialized agents to collaborate with the initial agent.",
+      "section": "Experiment Settings",
+      "page": null,
+      "link": "https://arxiv.org/html/2406.14228v3#S4.SS4.SSS0.Px1.p1.1"
+    },
+    {
+      "claim_id": "c020",
+      "block_id": "b00019",
+      "quote": "we ask each child agent to generate candidate results and then use LLMs to integrate these candidates with the result from the previous iteration into a new result",
+      "section": "STEP 4: Results Update",
+      "page": null,
+      "link": "https://arxiv.org/html/2406.14228v3#S3.SS2.SSS0.Px4.p1.1"
+    },
+    {
+      "claim_id": "c021",
+      "block_id": "b00019",
+      "quote": "we ask each child agent to generate candidate results and then use LLMs to integrate these candidates with the result from the previous iteration into a new result",
+      "section": "STEP 4: Results Update",
+      "page": null,
+      "link": "https://arxiv.org/html/2406.14228v3#S3.SS2.SSS0.Px4.p1.1"
+    },
+    {
+      "claim_id": "c021",
+      "block_id": "b00092",
+      "quote": "Then, a group chat manager is responsible for selecting a speaker, gathering responses, and disseminating the message.",
+      "section": "D.3 EvoAgent for AutoGen",
+      "page": null,
+      "link": "https://arxiv.org/html/2406.14228v3#A4.SS3.p1.1"
+    },
+    {
+      "claim_id": "c022",
+      "block_id": "b00018",
+      "quote": "We will select N child agents as the evolved agents in each iteration.",
+      "section": "STEP 3: Selection",
+      "page": null,
+      "link": "https://arxiv.org/html/2406.14228v3#S3.SS2.SSS0.Px3.p1.1"
+    },
+    {
+      "claim_id": "c022",
+      "block_id": "b00017",
+      "quote": "Besides, as we also need to conduct multiple iterations, we will append all agents generated in the previous generation into the next iteration.",
+      "section": "STEP 2: Crossover & Mutation",
+      "page": null,
+      "link": "https://arxiv.org/html/2406.14228v3#S3.SS2.SSS0.Px2.p1.1"
+    },
+    {
+      "claim_id": "c022",
+      "block_id": "b00019",
+      "quote": "Moreover, we can automatically generate more agents by repeating the operations from step 2 to step 4 until the number of agents has fulfilled our targets.",
+      "section": "STEP 4: Results Update",
+      "page": null,
+      "link": "https://arxiv.org/html/2406.14228v3#S3.SS2.SSS0.Px4.p1.1"
+    },
+    {
+      "claim_id": "c023",
+      "block_id": "b00005",
+      "quote": "EvoAgent can be considered as a one-shot agent generation method that starts from a specialized agent as the initial agent, and then considers its settings (e.g., role, skills, prompts, and so on) as the variables to be evolved.",
+      "section": "1 Introduction",
+      "page": null,
+      "link": "https://arxiv.org/html/2406.14228v3#S1.p3.1"
+    },
+    {
+      "claim_id": "c024",
+      "block_id": "b00017",
+      "quote": "For Crossover , we first enable the parent agents to generate results based on user requests. Then, based on the generated results, we ask LLMs to check which skills should be improved and then update them.",
+      "section": "STEP 2: Crossover & Mutation",
+      "page": null,
+      "link": "https://arxiv.org/html/2406.14228v3#S3.SS2.SSS0.Px2.p1.1"
+    },
+    {
+      "claim_id": "c024",
+      "block_id": "b00018",
+      "quote": "Here, we conduct a quality-check module with an LLM to detect whether the generated agents can satisfy it has inherited the characteristics and maintained differences from parent agents.",
+      "section": "STEP 3: Selection",
+      "page": null,
+      "link": "https://arxiv.org/html/2406.14228v3#S3.SS2.SSS0.Px3.p1.1"
+    },
+    {
+      "claim_id": "c025",
+      "block_id": "b00015",
+      "quote": "Thus, we can employ LLM to simulate evolutionary operators to update the system settings of agents and create new agents.",
+      "section": "3.2 EvoAgent",
+      "page": null,
+      "link": "https://arxiv.org/html/2406.14228v3#S3.SS2.p1.1"
+    },
+    {
+      "claim_id": "c025",
+      "block_id": "b00055",
+      "quote": "We employ an LLM that shares the same backbone as the initial agent for updates.",
+      "section": "Experiment Settings",
+      "page": null,
+      "link": "https://arxiv.org/html/2406.14228v3#S4.SS4.SSS0.Px1.p1.1"
+    },
+    {
+      "claim_id": "c026",
+      "block_id": "b00055",
+      "quote": "For each query, EvoAgent can generate N \\times T different specialized agents to collaborate with the initial agent.",
+      "section": "Experiment Settings",
+      "page": null,
+      "link": "https://arxiv.org/html/2406.14228v3#S4.SS4.SSS0.Px1.p1.1"
+    },
+    {
+      "claim_id": "c026",
+      "block_id": "b00042",
+      "quote": "Since each step in ScienceWorld requires using EA, we set the population size N as 1 and the iterations T as 1 for efficiency, denoted as EvoAgent (1,1) .",
+      "section": "Result & Analysis",
+      "page": null,
+      "link": "https://arxiv.org/html/2406.14228v3#S4.SS2.SSS0.Px3.p1.1"
+    },
+    {
+      "claim_id": "c027",
+      "block_id": "b00017",
+      "quote": "Besides, as we also need to conduct multiple iterations, we will append all agents generated in the previous generation into the next iteration.",
+      "section": "STEP 2: Crossover & Mutation",
+      "page": null,
+      "link": "https://arxiv.org/html/2406.14228v3#S3.SS2.SSS0.Px2.p1.1"
+    },
+    {
+      "claim_id": "c027",
+      "block_id": "b00019",
+      "quote": "we ask each child agent to generate candidate results and then use LLMs to integrate these candidates with the result from the previous iteration into a new result",
+      "section": "STEP 4: Results Update",
+      "page": null,
+      "link": "https://arxiv.org/html/2406.14228v3#S3.SS2.SSS0.Px4.p1.1"
+    }
+  ],
+  "verification": {
+    "status": "verified",
+    "findings": [
+      {
+        "claim_id": "c001",
+        "verdict": "supported",
+        "reason": "b00004、b00015、b00019支持问题动机、LLM模拟进化算子及答案整合；b00006报告多任务改善，b00038中GPT-4总体得分确为27.97→30.42。"
+      },
+      {
+        "claim_id": "c002",
+        "verdict": "supported",
+        "reason": "b00004明确将人工设置和扩展人力成本列为问题；b00005描述从初始专业智能体自动生成多个智能体。此处属于作者对研究动机和目标的陈述。"
+      },
+      {
+        "claim_id": "c003",
+        "verdict": "supported",
+        "reason": "b00016支持以预定义框架中的智能体为初始父代，b00005列出角色、技能和提示词等进化变量，b00015明确由LLM模拟进化算子。"
+      },
+      {
+        "claim_id": "c004",
+        "verdict": "supported",
+        "reason": "b00017分别描述依据父代结果更新技能的交叉操作，以及保持求解能力并增加差异的变异操作；b00018支持质量检查内容及每轮选择N个子代。"
+      },
+      {
+        "claim_id": "c005",
+        "verdict": "supported",
+        "reason": "b00019明确整合子代候选与上一轮结果，并重复步骤直至达到目标数量；b00017明确将上一代生成的全部智能体加入下一轮。"
+      },
+      {
+        "claim_id": "c006",
+        "verdict": "supported",
+        "reason": "b00007、b00008直接支持通用生成方法、无需额外人工监督和适用于任意框架的作者自述。结论未将这些主张表述为经独立核实的普适性或创新性。"
+      },
+      {
+        "claim_id": "c007",
+        "verdict": "supported",
+        "reason": "b00023的GPT-4分组逐项列出所述九个分数，EvoAgent在三个指标上均高于所列AutoAgents和AgentVerse结果。"
+      },
+      {
+        "claim_id": "c008",
+        "verdict": "supported",
+        "reason": "b00054逐项支持五种方法的Com./Hard数值；b00057说明该消融汇总GPT-3.5和Gemini-Pro的平均结果。"
+      },
+      {
+        "claim_id": "c009",
+        "verdict": "supported",
+        "reason": "b00035明确报告Self-Refine和SPP相对CoT下降，并称EvoAgent改善不同难度的多模态科学问答表现。结论保留了作者报告的性质。"
+      },
+      {
+        "claim_id": "c010",
+        "verdict": "supported",
+        "reason": "b00022、b00025—b00030支持任务名称、规模、模型、基线和指标；b00023支持所列GPT-4结果，b00032支持N=1、T=3及新增三个智能体的条件。Code确指Codenames Collaborative。"
+      },
+      {
+        "claim_id": "c011",
+        "verdict": "supported",
+        "reason": "b00028—b00030支持847道选择题、30个领域、三级难度、模型、基线及准确率指标；b00032支持初始设置和迭代条件。b00035提供定性改善陈述，所给MMMU文本块未列出具体分数。"
+      },
+      {
+        "claim_id": "c012",
+        "verdict": "supported",
+        "reason": "b00038支持两模型总体得分提升及GPT-3.5中等轨迹组19.91→18.87的下降；b00036、b00037、b00041、b00042支持任务范围、分组依据、评价方式和每步N=1、T=1的条件。"
+      },
+      {
+        "claim_id": "c013",
+        "verdict": "supported",
+        "reason": "b00040的GPT-4行支持最终通过率2.2→7.2及其余所列指标；该表仅为GPT-3.5列出ReAct。b00070、b00048、b00071、b00067分别支持查询规模、迭代设置、30步上限及模型版本和温度条件。"
+      },
+      {
+        "claim_id": "c014",
+        "verdict": "supported",
+        "reason": "b00052—b00057支持消融维度、双模型平均和所列配置；b00054支持全部引用数值，指标变化确不一致。该汇总表及相关文字未明确标注micro/macro口径。"
+      },
+      {
+        "claim_id": "c015",
+        "verdict": "supported",
+        "reason": "b00077中EvoAgent在三个任务上均比Direct得分高且耗时多，所列数值准确；b00078支持模型、SGLang、8张RTX 3090及bf16条件，并明确将时间成本相近表述为作者判断。所给文本未明确时间聚合口径。"
+      },
+      {
+        "claim_id": "c016",
+        "verdict": "supported",
+        "reason": "b00062明确承认相较单智能体增加token成本、除所述两框架外未广泛比较，以及未人工评价生成智能体质量。这是作者明确报告的局限。"
+      },
+      {
+        "claim_id": "c017",
+        "verdict": "supported",
+        "reason": "b00044明确称中长轨迹收益小于短轨迹；b00082将缺少质量检查的All-in交付问题与不适合的角色、过长计划及上下文窗口溢出联系起来。结论保留了该分析条件和可能性。"
+      },
+      {
+        "claim_id": "c018",
+        "verdict": "supported",
+        "reason": "b00081限定迭代实验为GPT-3.5的Trivia Creative Writing，b00083报告三轮后收益趋于平台，并将智能体趋同作为作者推测；b00054支持TravelPlanner汇总Com.由68.9降至67.5、Hard由14.0升至16.9。"
+      },
+      {
+        "claim_id": "c019",
+        "verdict": "supported",
+        "reason": "b00005明确以已有专业智能体的角色、技能和提示词等设置为进化变量；b00055明确称每个查询生成N×T个不同专业智能体与初始智能体协作。此处按作者描述成立。"
+      },
+      {
+        "claim_id": "c020",
+        "verdict": "supported",
+        "reason": "b00019直接描述各子智能体生成候选结果，再由LLM将候选与上一轮结果整合。"
+      },
+      {
+        "claim_id": "c021",
+        "verdict": "supported",
+        "reason": "b00019支持主流程中的候选结果整合；b00092在AutoGen适配语境中明确列出群聊管理器选择发言者、收集回答和分发消息的职责。"
+      },
+      {
+        "claim_id": "c022",
+        "verdict": "supported",
+        "reason": "b00018支持每轮选择N个子代，b00017支持上一代智能体加入下一轮，b00019支持重复操作直至达到目标数量。"
+      },
+      {
+        "claim_id": "c023",
+        "verdict": "supported",
+        "reason": "b00005直接将角色、技能、提示词等智能体设置列为待进化变量。"
+      },
+      {
+        "claim_id": "c024",
+        "verdict": "supported",
+        "reason": "b00017明确依据父代对用户请求生成的结果判断需改进的技能；b00018明确由LLM检查子代的特征继承与差异性。"
+      },
+      {
+        "claim_id": "c025",
+        "verdict": "supported",
+        "reason": "b00015支持LLM模拟进化算子更新设置；b00055明确在所述实验设置中使用与初始智能体相同骨干的LLM进行结果更新。这支持所述实现方式，不证明所有适配实现均须如此。"
+      },
+      {
+        "claim_id": "c026",
+        "verdict": "supported",
+        "reason": "b00055明确以每个查询为智能体生成单位；b00042明确ScienceWorld每一步使用进化操作，并设置N=1、T=1。"
+      },
+      {
+        "claim_id": "c027",
+        "verdict": "supported",
+        "reason": "b00017支持上一代生成的智能体加入下一轮，b00019支持上一轮结果参与后续整合。结论限定为任务内跨轮保留，未扩展为跨查询记忆。"
+      }
+    ],
+    "quote_check_passed": true,
+    "reviewed_against_original": true
+  },
+  "reading": {
+    "read_chunks": 2,
+    "total_chunks": 2,
+    "total_blocks": 103,
+    "read_block_ids": [
+      "b00001",
+      "b00002",
+      "b00003",
+      "b00004",
+      "b00005",
+      "b00006",
+      "b00007",
+      "b00008",
+      "b00009",
+      "b00010",
+      "b00011",
+      "b00012",
+      "b00013",
+      "b00014",
+      "b00015",
+      "b00016",
+      "b00017",
+      "b00018",
+      "b00019",
+      "b00020",
+      "b00021",
+      "b00022",
+      "b00023",
+      "b00024",
+      "b00025",
+      "b00026",
+      "b00027",
+      "b00028",
+      "b00029",
+      "b00030",
+      "b00031",
+      "b00032",
+      "b00033",
+      "b00034",
+      "b00035",
+      "b00036",
+      "b00037",
+      "b00038",
+      "b00039",
+      "b00040",
+      "b00041",
+      "b00042",
+      "b00043",
+      "b00044",
+      "b00045",
+      "b00046",
+      "b00047",
+      "b00048",
+      "b00049",
+      "b00050",
+      "b00051",
+      "b00052",
+      "b00053",
+      "b00054",
+      "b00055",
+      "b00056",
+      "b00057",
+      "b00058",
+      "b00059",
+      "b00060",
+      "b00061",
+      "b00062",
+      "b00063",
+      "b00064",
+      "b00065",
+      "b00066",
+      "b00067",
+      "b00068",
+      "b00069",
+      "b00070",
+      "b00071",
+      "b00072",
+      "b00073",
+      "b00074",
+      "b00075",
+      "b00076",
+      "b00077",
+      "b00078",
+      "b00079",
+      "b00080",
+      "b00081",
+      "b00082",
+      "b00083",
+      "b00084",
+      "b00085",
+      "b00086",
+      "b00087",
+      "b00088",
+      "b00089",
+      "b00090",
+      "b00091",
+      "b00092",
+      "b00093",
+      "b00094",
+      "b00095",
+      "b00096",
+      "b00097",
+      "b00098",
+      "b00099",
+      "b00100",
+      "b00101",
+      "b00102",
+      "b00103"
+    ],
+    "content_hash": "556c2f451278c7a9835081f5cbb2fd7a767536aa603ec53d534faa6c6be5529a",
+    "raw_sha256": "54a8ab18edc31050d4502a1142e1cbde37903fa8bf9de0f97e4337bdf1879be8",
+    "prompt_version": "2026-10-24.v1"
+  },
+  "warnings": [
+    "全文指已提取的文本块；图片、图表视觉、公式和部分算法环境未独立核验。",
+    "未复现实验；发表信息如有列出，来自作者且未独立核实。"
+  ],
+  "created_at": "2026-10-24T22:28:45.206745+00:00",
+  "path": "papers/2406.14228/v3/",
+  "latest_known_version": 3,
+  "versions": [
+    {
+      "version": 3,
+      "path": "papers/2406.14228/v3/",
+      "status": "analyzed"
+    }
+  ]
+}

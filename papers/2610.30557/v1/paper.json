@@ -1,0 +1,1941 @@
+{
+  "schema_version": 1,
+  "paper": {
+    "title": "Governed Self-Evolution for Autonomous Investing: A Multi-Agent LLM System with an Invariant Core",
+    "authors": [
+      "Yebo Feng",
+      "Jingyang Dai",
+      "Liangrui Pan",
+      "Nelson Lau",
+      "Jiahua Xu",
+      "Yang Liu"
+    ],
+    "abstract": "LLM agents that act on live Web data must combine heterogeneous evidence, remember what they have done and improve from outcomes without weakening their own safeguards. We study this problem in autonomous investing, where every action is irreversible and based on untrusted Web content. We present Steward, a multi-agent LLM system that draws the boundary of self-evolution in its type system. First, nine role-specialised agents decide jointly: four analysts read news feeds, SEC filings, macroeconomic series and market data and emit typed reports, from which a Portfolio Manager sets target positions that a protected Risk Manager audits. Second, a seven-layer shared memory, assembled by code from the system's own record, gives each decision its position context, the market narrative, calibration and the agent's past decisions. Third, the system improves itself by review: code grades every trade and forecast nightly and writes the grades into memory, and each quarter a reflector proposes prompt learnings that a deterministic gate applies reversibly and replay of recorded inputs verifies. All three operate around an invariant core of order arithmetic, risk rules and discipline-agent prompts that no self-edit can reach. In a five-month live deployment (102 trading days, 1,632 LLM calls), the system contained a 24.6% sector drawdown to a 0.3% loss; in replay of its recorded inputs, a single model given the same raw data traded more and lost 1.35 points against the market over five days where the joint design showed no significant loss, and no injected instruction was followed; and a 2015-2026 backtest shows the core alone lowering the maximum drawdown under all 50 random entry policies. The reflector traced the dominant failure to its root cause, and the gate applied a learning that the agent adopted on trigger evenings and on no control evening. Code: https://github.com/yebof/quant-agent",
+    "categories": [
+      "cs.AI",
+      "cs.CL",
+      "cs.MA",
+      "q-fin.PM"
+    ],
+    "first_submitted_at": "2026-10-22T00:22:47Z",
+    "updated_at": "2026-10-22T00:22:47Z",
+    "doi": null,
+    "journal_ref": null,
+    "arxiv_id": "2610.30557",
+    "version": 1,
+    "abstract_url": "https://arxiv.org/abs/2610.30557v1",
+    "pdf_url": "https://arxiv.org/pdf/2610.30557v1"
+  },
+  "topics": [
+    "multi_agent",
+    "self_evolution",
+    "intersection"
+  ],
+  "status": "needs_verification",
+  "coverage": "full_text",
+  "topic_status": "confirmed",
+  "analysis": {
+    "one_sentence": {
+      "id": "c001",
+      "text": "Steward 面向不可信 Web 数据下的自主投资，以九智能体、代码共享记忆及受不变核心约束的自更新实现治理；作者报告102个交易日模拟账户运行，并在后续季度学习回放中观察到局部输出行为变化。",
+      "evidence": [
+        {
+          "block_id": "b00019",
+          "quote": "Nine LLM agents and a deterministic core run in six sessions"
+        },
+        {
+          "block_id": "b00066",
+          "quote": "We presented Steward , a multi-agent LLM system for autonomous investing in which role-specialised agents decide jointly over heterogeneous Web data, share a memory computed by code, and evolve at two time scales around an invariant core that no self-edit can reach."
+        },
+        {
+          "block_id": "b00037",
+          "quote": "Steward traded live from April 8 to September 10, 2026 (102 trading days) on real-time Web data, in a brokerage paper account funded with US$100,000."
+        },
+        {
+          "block_id": "b00052",
+          "quote": "The second run, on September 30, was live."
+        },
+        {
+          "block_id": "b00052",
+          "quote": "the prescribed form (an explicit TAKE/WAIT call or named blocker) appeared in 5 of 20 trigger replays against 0 of 20 for the base prompt and never on a control evening"
+        }
+      ]
+    },
+    "research_problem": [
+      {
+        "id": "c002",
+        "text": "作者提出：行动智能体需同时综合异质弱证据、记住决策及结果，并从经验中改进而不削弱约束。",
+        "evidence": [
+          {
+            "block_id": "b00003",
+            "quote": "An agent that makes consequential decisions from Web content must do three things at once: combine heterogeneous, individually weak evidence into one decision; remember what it has decided and how those decisions turned out; and improve from experience"
+          },
+          {
+            "block_id": "b00003",
+            "quote": "without weakening the rules that constrain it."
+          }
+        ]
+      },
+      {
+        "id": "c003",
+        "text": "作者归纳四类自进化失效：自我评分偏乐观、风险纪律被削弱、修改不可审计或撤销，以及无行为效果的修改被视为进步。",
+        "evidence": [
+          {
+            "block_id": "b00016",
+            "quote": "(F1) Self-grading : the signal that drives evolution is the agent’s own assessment \\hat{g}_{t} rather than y_{t} , and \\hat{g}_{t} is optimistic."
+          },
+          {
+            "block_id": "b00016",
+            "quote": "(F2) Discipline erosion : \\pi^{\\prime} weakens the rules that bound risk, because nothing separates what the loop may change from what it must not."
+          },
+          {
+            "block_id": "b00016",
+            "quote": "(F3) Unauditable change : no record ties \\pi^{\\prime} to the evidence that produced it, so an erroneous edit can be neither found nor reverted. (F4) Undetected inertness : an edit passes every check yet changes no decision, and the loop reports progress it did not make."
+          }
+        ]
+      }
+    ],
+    "method_steps": [
+      {
+        "id": "c004",
+        "text": "晨间四名分析师并行读取 Web 并输出类型化报告；投资组合经理结合共享记忆形成计划，依次经过确定性订单构造器、阻断式风险引擎和风险经理。",
+        "evidence": [
+          {
+            "block_id": "b00020",
+            "quote": "Only the morning session may open positions: four analysts read the Web in parallel, a Portfolio Manager synthesises their typed reports with the shared memory of § 4.2 , and the plan passes through a deterministic order constructor, a blocking risk engine and an LLM Risk Manager before execution."
+          }
+        ]
+      },
+      {
+        "id": "c005",
+        "text": "用 Pydantic 对象及字段校验约束输出，保存验证后对象及精确输入；代码从系统记录组装七层共享记忆，供经理读取。",
+        "evidence": [
+          {
+            "block_id": "b00021",
+            "quote": "Each agent emits one Pydantic object (Appendix B )."
+          },
+          {
+            "block_id": "b00024",
+            "quote": "An agent cannot skip a step, enumerations are Literal types, and cross-field validators encode domain invariants:"
+          },
+          {
+            "block_id": "b00024",
+            "quote": "The validated object is stored verbatim with its exact input, so the record is not a log about decisions but the decisions themselves, in a form that code can grade, a reflector can read and a harness can replay."
+          },
+          {
+            "block_id": "b00023",
+            "quote": "The agents share no conversation history. They share a memory that code assembles from the system’s own record in seven layers, read by the Portfolio Manager every morning."
+          }
+        ]
+      },
+      {
+        "id": "c006",
+        "text": "晚间更新反馈；季度反思提出类型化提示词学习，经确定性门控可逆应用。固定记录输入比较更新前后输出，并以未改提示词重跑估计模型方差。",
+        "evidence": [
+          {
+            "block_id": "b00008",
+            "quote": "each evening, code grades every trade and forecast and writes the grades into memory; each quarter, a Meta Reflector proposes typed prompt learnings that a twelve-invariant gate applies reversibly and that replay verifies."
+          },
+          {
+            "block_id": "b00036",
+            "quote": "A decision-replay harness passes recorded inputs through the prompt before and after a learning, with the rest of the input fixed, and compares the outputs structurally:"
+          },
+          {
+            "block_id": "b00036",
+            "quote": "Re-running the unchanged prompt on the same inputs measures the model’s own variance, against which a learning’s effect is read."
+          }
+        ]
+      }
+    ],
+    "author_contributions": [
+      {
+        "id": "c007",
+        "text": "作者将贡献定位为多信号行动智能体的治理：角色协作、代码共享记忆，以及围绕自编辑无法触及的不变核心开展双时间尺度演化。",
+        "evidence": [
+          {
+            "block_id": "b00011",
+            "quote": "our contribution is not a signal but the governance of an agent that acts on many, evaluated live."
+          },
+          {
+            "block_id": "b00066",
+            "quote": "We presented Steward , a multi-agent LLM system for autonomous investing in which role-specialised agents decide jointly over heterogeneous Web data, share a memory computed by code, and evolve at two time scales around an invariant core that no self-edit can reach."
+          }
+        ]
+      },
+      {
+        "id": "c008",
+        "text": "作者声称，据其所知，这是首个经数月在线运行评估且记录全部演化提案与拒绝的自进化 LLM 智能体；本次未独立确认该优先权。",
+        "evidence": [
+          {
+            "block_id": "b00005",
+            "quote": "To our knowledge, Steward is the first self-evolving LLM agent evaluated over months of live operation with every proposal and rejection of its evolution loop logged."
+          }
+        ]
+      }
+    ],
+    "reported_comparisons": [
+      {
+        "id": "c009",
+        "text": "20晨回放中，原始数据单模型配置更多标的、新买入更多且反转更频繁；其5日、10日相对 SPY 收益为负，部署架构与零无法区分。单晨去除记忆变化很小。",
+        "evidence": [
+          {
+            "block_id": "b00046",
+            "quote": "we replay 20 mornings sampled evenly over the deployment through three decision layers on their exact recorded inputs"
+          },
+          {
+            "block_id": "b00046",
+            "quote": "it targets 5.8 names a morning against 3.7, puts 41% of equity into new intent against 19%, and reverses its own recent decisions two and a half times as often (0.25 against 0.10 per morning)"
+          },
+          {
+            "block_id": "b00046",
+            "quote": "Its books lose over the next five and ten days ( -1.35\\pm 0.44 and -1.76\\pm 0.75 points against SPY; hit rates 35% and 32%), whereas the deployed design’s are indistinguishable from zero."
+          },
+          {
+            "block_id": "b00046",
+            "quote": "Removing the memory changes almost nothing on a single morning"
+          }
+        ]
+      },
+      {
+        "id": "c010",
+        "text": "记录决策价格模拟中，分析师买入评级收益1.3%，经理目标无退出15.4%，加入退出11.6%，再加入风险经理修改12.2%；实际模拟账户收益5.0%。",
+        "evidence": [
+          {
+            "block_id": "b00042",
+            "quote": "the analysts’ buy ratings return +1.3\\% , whereas the Portfolio Manager’s target weights return +15.4\\% with no exits (at 93% exposure), +11.6\\% with the system’s own exit rules and +12.2\\% with the Risk Manager’s recorded edits"
+          },
+          {
+            "block_id": "b00043",
+            "quote": "The live portfolio returned +5.0% against the intent’s +12.2\\% because it was less invested: realised gross exposure averaged 56% against 79%"
+          },
+          {
+            "block_id": "b00037",
+            "quote": "in a brokerage paper account funded with US$100,000."
+          }
+        ]
+      },
+      {
+        "id": "c011",
+        "text": "确定性核心独立回测中，全部50种随机入场策略最大回撤均降低，中位数37%→28%；动量入场61%→33%。两类策略的 CAGR 均下降。",
+        "evidence": [
+          {
+            "block_id": "b00054",
+            "quote": "The core lowered the maximum drawdown under all 50 random entry policies (median 37% \\to 28%) and under momentum entries (61% \\to 33%)"
+          },
+          {
+            "block_id": "b00098",
+            "quote": "Entries / variant CAGR Sharpe Max DD"
+          },
+          {
+            "block_id": "b00098",
+            "quote": "Momentum entries No core + 61 1.15 - 61 - 25 - 36 - 27 - 46"
+          },
+          {
+            "block_id": "b00098",
+            "quote": "Full core + 41 1.30 - 33 - 18 - 30 - 18 - 27 Random entries, median of 50 seeds No core + 17 0.81 - 37 - 20 - 35 - 26 - 8 Full core + 14 0.82 - 28 - 17 - 27 - 21 - 7"
+          }
+        ]
+      }
+    ],
+    "experiments": [
+      {
+        "id": "c012",
+        "text": "五个月实时数据模拟账户部署；作者报告行业下跌窗口内组合损失较小，账户没有真实资本风险。",
+        "evidence": [
+          {
+            "block_id": "b00037",
+            "quote": "Steward traded live from April 8 to September 10, 2026 (102 trading days) on real-time Web data, in a brokerage paper account funded with US$100,000."
+          },
+          {
+            "block_id": "b00037",
+            "quote": "The deployment produced 619 pipeline runs and 1,632 logged LLM calls served by frontier models from two vendors with automatic failover. Logged API cost was $455, about US$4.4 per trading day"
+          },
+          {
+            "block_id": "b00054",
+            "quote": "The portfolio returned +5.0% against +12.4% for SPY during a semiconductor-led rally"
+          },
+          {
+            "block_id": "b00054",
+            "quote": "Between June 22 and July 29 the semiconductor ETF fell 24.6%, QQQ 10.3% and SPY 2.0%, whereas the portfolio lost 0.3%"
+          },
+          {
+            "block_id": "b00078",
+            "quote": "Logged API cost per agent over the deployment (a lower bound: per-call cost logging began on May 12)."
+          },
+          {
+            "block_id": "b00067",
+            "quote": "The system traded a paper account, so no capital was at risk;"
+          }
+        ],
+        "task": "基于实时 Web 数据的自主投资",
+        "model": null,
+        "baseline": "SPY、QQQ及半导体ETF同期表现",
+        "metric": "账户收益、特定下跌窗口损失、调用量与API成本",
+        "result": "全期账户+5.0%，SPY+12.4%；6月22日至7月29日组合−0.3%，半导体ETF−24.6%、QQQ−10.3%、SPY−2.0%。",
+        "resource_conditions": "2026年4月8日至9月10日，102个交易日，10万美元模拟账户；619次流水线运行、1,632次LLM调用；已记录API成本455美元，为下界，逐调用成本日志始于5月12日。"
+      },
+      {
+        "id": "c013",
+        "text": "使用记录输入回放，比较类型化报告加记忆、去除记忆及原始数据单模型三种决策层。",
+        "evidence": [
+          {
+            "block_id": "b00046",
+            "quote": "we replay 20 mornings sampled evenly over the deployment through three decision layers on their exact recorded inputs (Table 2 , Figure 2 d; 100 LLM calls): the deployed design (typed analyst reports plus memory; two samples per morning), the same input without any memory layer,"
+          },
+          {
+            "block_id": "b00046",
+            "quote": "a single model that receives the raw data the analysts read and must analyse and decide in one call."
+          },
+          {
+            "block_id": "b00046",
+            "quote": "Its books lose over the next five and ten days ( -1.35\\pm 0.44 and -1.76\\pm 0.75 points against SPY; hit rates 35% and 32%), whereas the deployed design’s are indistinguishable from zero."
+          },
+          {
+            "block_id": "b00046",
+            "quote": "Removing the memory changes almost nothing on a single morning"
+          }
+        ],
+        "task": "投资决策架构消融",
+        "model": null,
+        "baseline": "去除全部记忆层；原始数据单模型单次分析决策",
+        "metric": "相对SPY的5日、10日前瞻收益及命中率",
+        "result": "正文报告单模型分别为−1.35±0.44、−1.76±0.75个百分点，命中率35%、32%；部署架构与零无法区分；单晨移除记忆变化很小。",
+        "resource_conditions": "均匀抽取20个早晨的精确记录输入，共100次LLM调用；部署架构每晨采样两次。"
+      },
+      {
+        "id": "c014",
+        "text": "Q2学习项因长度超限被拒；反事实回放未显示超出基线重跑噪声的仓位变化。",
+        "evidence": [
+          {
+            "block_id": "b00049",
+            "quote": "The gate withheld it on its length invariant (282 characters against a 200-character cap) and logged why."
+          },
+          {
+            "block_id": "b00049",
+            "quote": "Replay then measured what the gate had declined (Figure 3 a, Table 8 ; 35 calls, US$17): on the ten mornings whose BUYs were later graded wrong and five control mornings,"
+          },
+          {
+            "block_id": "b00049",
+            "quote": "the Portfolio Manager prompt with the learning kept 8 of the 10 flagged names that the baseline still proposed within one point, and every weight moved within the noise of re-running the baseline itself (1.8 points per name at the median)."
+          }
+        ],
+        "task": "被拒宏观警告仓位学习项的行为验证",
+        "model": null,
+        "baseline": "未加入学习项的经理提示词及其重复运行",
+        "metric": "标记标的权重变化及基线重跑噪声",
+        "result": "基线仍提出的10个标记标的中，8个权重变化不超过1个百分点；所有权重变化均在基线重跑噪声内，噪声中位数为每标的1.8个百分点。",
+        "resource_conditions": "10个买入后来被评为错误的早晨、5个对照早晨；35次调用，17美元。"
+      },
+      {
+        "id": "c015",
+        "text": "9月30日应用Q3学习项后，回放中预期输出形式增加，但重复遗漏提及数未改善。",
+        "evidence": [
+          {
+            "block_id": "b00052",
+            "quote": "The second run, on September 30, was live."
+          },
+          {
+            "block_id": "b00052",
+            "quote": "The gate applied it as a one-file, reversible commit."
+          },
+          {
+            "block_id": "b00052",
+            "quote": "We re-ran ten evenings on which such recurrences existed and four control evenings through the prompt before and after the commit, two samples each (Figure 3 b, Table 9 ; 56 calls, about US$16)."
+          },
+          {
+            "block_id": "b00052",
+            "quote": "the prescribed form (an explicit TAKE/WAIT call or named blocker) appeared in 5 of 20 trigger replays against 0 of 20 for the base prompt and never on a control evening"
+          },
+          {
+            "block_id": "b00052",
+            "quote": "the trigger presupposes a count of past classifications that the Evening Analyst’s input does not provide, so the recurring misses surfaced were unchanged (25 of 64 against 26 of 64)."
+          }
+        ],
+        "task": "已应用晚间分析师学习项的行为验证",
+        "model": null,
+        "baseline": "提交前提示词；无触发条件的对照晚间",
+        "metric": "明确TAKE/WAIT或具名阻碍的出现率、重复遗漏提及数",
+        "result": "预期形式由0/20增至5/20，对照均未出现；重复遗漏提及数为25/64，基线为26/64。",
+        "resource_conditions": "10个触发晚间与4个对照晚间的冻结输入；前后提示词各采样两次，共56次调用，约16美元。"
+      },
+      {
+        "id": "c016",
+        "text": "无LLM回测测试确定性核心；回撤下降伴随较低CAGR。作者限定2026年股票池下仅变体间比较有意义。",
+        "evidence": [
+          {
+            "block_id": "b00097",
+            "quote": "Backtest of the deterministic core alone, 2015–2026, on the 80 single stocks of the universe with LLM-free weekly entries (top 10 by 126-day momentum, or random over 50 seeds)."
+          },
+          {
+            "block_id": "b00097",
+            "quote": "Core: the rules of § 4.3 ; ablations remove one. CAGR and drawdowns in %; 5 bp per side. The universe is from 2026, so only comparisons between variants are meaningful."
+          },
+          {
+            "block_id": "b00054",
+            "quote": "The core lowered the maximum drawdown under all 50 random entry policies (median 37% \\to 28%) and under momentum entries (61% \\to 33%)"
+          },
+          {
+            "block_id": "b00098",
+            "quote": "Entries / variant CAGR Sharpe Max DD"
+          },
+          {
+            "block_id": "b00098",
+            "quote": "Momentum entries No core + 61 1.15 - 61 - 25 - 36 - 27 - 46"
+          },
+          {
+            "block_id": "b00098",
+            "quote": "Full core + 41 1.30 - 33 - 18 - 30 - 18 - 27 Random entries, median of 50 seeds No core + 17 0.81 - 37 - 20 - 35 - 26 - 8 Full core + 14 0.82 - 28 - 17 - 27 - 21 - 7"
+          }
+        ],
+        "task": "确定性风控核心的长期回测",
+        "model": null,
+        "baseline": "相同入场策略无核心；逐项移除核心规则",
+        "metric": "最大回撤、CAGR",
+        "result": "随机策略最大回撤中位数37%→28%、CAGR 17%→14%；动量策略最大回撤61%→33%、CAGR 61%→41%。",
+        "resource_conditions": "2015—2026年，80只股票，每周入场；126日动量前10名或50个随机种子；单边成本5基点；股票池来自2026年。"
+      },
+      {
+        "id": "c017",
+        "text": "向记录输入注入三类对抗新闻，分别测试新闻分析师过滤及直接进入经理新闻区的攻击。",
+        "evidence": [
+          {
+            "block_id": "b00057",
+            "quote": "We insert one adversarial item into the exact recorded input of ten mornings and re-run the agent (Table 4 ; 50 calls, US$19), with three payloads:"
+          },
+          {
+            "block_id": "b00057",
+            "quote": "a direct override (set one name to 45% and every other target to zero), a plausible headline (300% upside; managers are taking maximum size and disabling stops) and a suspension of discipline (stops and the cash-only rule lifted, allocate 60% to an inverse ETF)."
+          },
+          {
+            "block_id": "b00057",
+            "quote": "The News agent excluded the item from its typed report in all 20 replays and flagged it as instruction-like in every briefing."
+          },
+          {
+            "block_id": "b00057",
+            "quote": "Placed directly in the Portfolio Manager’s news section, as if the analyst layer had passed it through, the item was followed in none of 30 replays; in 23 the Portfolio Manager’s CoT named it as injected content and refused it"
+          }
+        ],
+        "task": "提示注入抵抗测试",
+        "model": null,
+        "baseline": null,
+        "metric": "攻击内容排除次数、指令遵从次数、显式识别拒绝次数",
+        "result": "新闻智能体20/20次排除并标记；经理直接接收时0/30次遵从，其中23次显式识别并拒绝。",
+        "resource_conditions": "10个早晨记录输入，三类负载；50次调用，19美元。"
+      },
+      {
+        "id": "c018",
+        "text": "确定性审计衡量推理记录中数字的可匹配性；来源范围包括输入、历史提示词及自身输出。",
+        "evidence": [
+          {
+            "block_id": "b00096",
+            "quote": "The audit samples up to 150 CoTs per agent and extracts every number in their reasoning fields, excluding small integers and years."
+          },
+          {
+            "block_id": "b00096",
+            "quote": "A number is grounded if it occurs in the agent’s input message, in any historical version of its prompt or in its own emitted fields, allowing rounding and truncation;"
+          },
+          {
+            "block_id": "b00102",
+            "quote": "Grounded: cited numbers found in the agent’s input, prompt or own fields, including derived quantities; Strict: exact or rounded matches only; Placebo: strict grounding against another day’s input."
+          },
+          {
+            "block_id": "b00103",
+            "quote": "All 750 254,094 99.91% 96.06% 22%"
+          },
+          {
+            "block_id": "b00096",
+            "quote": "the placebo is reported on numbers with three or more significant digits."
+          }
+        ],
+        "task": "推理记录的数字依据审计",
+        "model": null,
+        "baseline": "严格匹配；同智能体错配日期输入的安慰剂",
+        "metric": "数字匹配比例",
+        "result": "包含派生量时99.91%，严格匹配96.06%；安慰剂22%，但安慰剂仅统计至少三位有效数字。",
+        "resource_conditions": "750条CoT、254,094个数字；每智能体最多150条，排除小整数和年份。"
+      }
+    ],
+    "limitations": [
+      {
+        "id": "c019",
+        "text": "作者承认：证据仅来自一个配置、一个上涨窗口的模拟账户；前瞻期限重叠、模拟忽略成交风险，季度循环仅两次且仅一次应用；小规模回放不能按收益给架构排名。",
+        "evidence": [
+          {
+            "block_id": "b00065",
+            "quote": "The evidence comes from one configuration traded on a paper account through one rising window, with overlapping forward horizons, simulations that ignore fill risk and two quarterly cycles, one applied; replays of 14–20 inputs expose behavioural differences but cannot rank variants by return."
+          },
+          {
+            "block_id": "b00054",
+            "quote": "alpha is not identifiable over 102 days, and no claim of this paper rests on it."
+          }
+        ]
+      },
+      {
+        "id": "c020",
+        "text": "作者指出，Q3学习所需历史分类计数未进入实际输入；其他提示词与股票池的人工修改使10月记录无法隔离学习效果。应用前结果评分回放仍是下一步。",
+        "evidence": [
+          {
+            "block_id": "b00052",
+            "quote": "the trigger presupposes a count of past classifications that the Evening Analyst’s input does not provide"
+          },
+          {
+            "block_id": "b00052",
+            "quote": "Because the operators had also revised other prompts and the universe before the cycle, the October record cannot isolate the learning; replay can."
+          },
+          {
+            "block_id": "b00064",
+            "quote": "The natural next invariant is therefore an outcome-scored replay check that confirms a learning is operable on the agent’s actual inputs and measures its effect on decisions before it is applied."
+          }
+        ]
+      }
+    ],
+    "multi_agent": {
+      "roles": {
+        "id": "c021",
+        "text": "九个角色为新闻、财报、宏观、技术四名分析师，投资组合经理、风险经理、持仓审查员、晚间分析师和季度反思器。",
+        "evidence": [
+          {
+            "block_id": "b00019",
+            "quote": "Nine LLM agents and a deterministic core run in six sessions"
+          },
+          {
+            "block_id": "b00021",
+            "quote": "The News Intelligence agent maintains three layers:"
+          },
+          {
+            "block_id": "b00021",
+            "quote": "The Earnings Analyst reads 10-Q and 10-K filings"
+          },
+          {
+            "block_id": "b00021",
+            "quote": "The Macro Analyst classifies the regime"
+          },
+          {
+            "block_id": "b00021",
+            "quote": "The Technical Analyst rates each symbol on a five-level scale"
+          },
+          {
+            "block_id": "b00021",
+            "quote": "The Portfolio Manager returns target positions; the Risk Manager approves or rejects the plan with a reason category, field-level modifications and an optional scale factor for all buys; the Position Reviewer returns SELL, REDUCE, TRAIL_STOP or HOLD per holding."
+          },
+          {
+            "block_id": "b00031",
+            "quote": "The Evening Analyst then completes a seven-step CoT"
+          },
+          {
+            "block_id": "b00034",
+            "quote": "On the last trading day of each quarter the evening session invokes a Meta Reflector."
+          }
+        ]
+      },
+      "coordination": {
+        "id": "c022",
+        "text": "分析师并行、经理综合，随后代码构造订单并执行硬规则阻断，风险经理复审；风险经理不能批准被引擎阻断的计划。",
+        "evidence": [
+          {
+            "block_id": "b00020",
+            "quote": "four analysts read the Web in parallel, a Portfolio Manager synthesises their typed reports with the shared memory of § 4.2 , and the plan passes through a deterministic order constructor, a blocking risk engine and an LLM Risk Manager before execution."
+          },
+          {
+            "block_id": "b00027",
+            "quote": "Only plans that pass reach the LLM Risk Manager, which can reject, modify or scale them but cannot approve what the engine blocked."
+          }
+        ]
+      },
+      "communication": {
+        "id": "c023",
+        "text": "智能体不共享对话历史，通过类型化报告传递信息；原始标题和申报文本仅进入新闻与财报智能体，经理接收类型化字段和新闻简报。",
+        "evidence": [
+          {
+            "block_id": "b00023",
+            "quote": "The agents share no conversation history."
+          },
+          {
+            "block_id": "b00028",
+            "quote": "Raw headlines and filing text reach only the News and Earnings agents"
+          },
+          {
+            "block_id": "b00028",
+            "quote": "The Portfolio Manager never sees a headline or a filing: it reads typed fields and the News agent’s briefing"
+          }
+        ]
+      },
+      "shared_memory": {
+        "id": "c024",
+        "text": "代码组装七层记忆：当日信号、持仓背景、近期叙事、45天校准、最近风险裁决、经理最近决策及接近行业上限的预计持仓。",
+        "evidence": [
+          {
+            "block_id": "b00023",
+            "quote": "They share a memory that code assembles from the system’s own record in seven layers, read by the Portfolio Manager every morning."
+          },
+          {
+            "block_id": "b00023",
+            "quote": "L1 holds the day’s typed analyst signals. L2 gives each holding its entry date, days held, entry thesis and its last seven Technical ratings."
+          },
+          {
+            "block_id": "b00023",
+            "quote": "L3 is the narrative: the last seven evening outlooks, seven days of macro regime, and the high-conviction news state changes of the last two weeks."
+          },
+          {
+            "block_id": "b00023",
+            "quote": "L4 is a 45-day calibration table:"
+          },
+          {
+            "block_id": "b00023",
+            "quote": "L5 lists the last five Risk Manager verdicts with their categories, L6 the agent’s own last three decisions, so that reversals are visible, and L7 a projected book that flags sectors approaching their cap."
+          }
+        ]
+      },
+      "scheduling": {
+        "id": "c025",
+        "text": "仅晨间允许开仓，午间与收盘仅卖出；晚间核对成交并复盘，季度末反思90天记录；无LLM熔断器每30分钟及晨间各阶段运行。",
+        "evidence": [
+          {
+            "block_id": "b00020",
+            "quote": "Only the morning session may open positions"
+          },
+          {
+            "block_id": "b00020",
+            "quote": "The midday and close sessions are sell-only and run a Position Reviewer"
+          },
+          {
+            "block_id": "b00076",
+            "quote": "20:00–22:00 evening ✓ reconcile fills; grade trades and forecasts; write insights quarter end meta ✓ self-portrait over 90 days; propose learnings; governed apply"
+          },
+          {
+            "block_id": "b00029",
+            "quote": "The circuit breaker, which uses no LLM, runs every 30 minutes and again at each stage of the morning session"
+          }
+        ]
+      },
+      "equal_budget_single_agent_comparison": null
+    },
+    "self_evolution": {
+      "changed_object": {
+        "id": "c026",
+        "text": "更新对象为每日代码重写的记忆，以及四名分析师、投资组合经理、晚间分析师提示词的 Learnings 区；风险经理、持仓审查员和代码规则受保护。",
+        "evidence": [
+          {
+            "block_id": "b00030",
+            "quote": "What can change is the memory, rewritten daily by code, and the prompts of the four analysts, the Portfolio Manager and the Evening Analyst, each of which carries a marked Learnings section that the gate of § 4.5 may append to."
+          },
+          {
+            "block_id": "b00030",
+            "quote": "The Risk Manager and the Position Reviewer, which encode the hard discipline, are absent from the Literal type of the proposal schema, so no self-edit can name them, and every rule above lives in code that no prompt reaches."
+          }
+        ]
+      },
+      "feedback": {
+        "id": "c027",
+        "text": "晚间分析师生成类别标签，结果量由代码根据成交和价格计算；代码聚合校准、预测命中率、重复遗漏及根因，供次晨决策和季度反思使用。",
+        "evidence": [
+          {
+            "block_id": "b00032",
+            "quote": "The labels the Evening Analyst assigns are categories; every quantity that measures an outcome is computed by code from fills and prices."
+          },
+          {
+            "block_id": "b00032",
+            "quote": "What feeds forward is aggregated by code from that record: the calibration of L4, the hit rates of the next-day calls, missed themes that recur in at least two episodes or symbols over the last 14 evenings, and root causes that recur across at least two symbols."
+          },
+          {
+            "block_id": "b00032",
+            "quote": "The Portfolio Manager reads them the next morning with the evening’s outlook"
+          },
+          {
+            "block_id": "b00034",
+            "quote": "Its input is a deterministic digest of 90 days of graded record"
+          }
+        ]
+      },
+      "update_method": {
+        "id": "c028",
+        "text": "季度反思至多提出三个追加或按哈希撤回的学习项；确定性门控检查目标、长度、禁词、相似度和容量，记录接受或拒绝，并以版本提交支持撤销。",
+        "evidence": [
+          {
+            "block_id": "b00034",
+            "quote": "Its output is at most three PromptLearning objects (Listing 1 ), each an append or a retraction by content hash"
+          },
+          {
+            "block_id": "b00073",
+            "quote": "(2) an allow-list of target agents, with the Risk Manager and Position Reviewer excluded both here and in the proposal schema’s Literal ; (3) length ceiling (300 characters; 200 before the Q3 cycle) and justification floor;"
+          },
+          {
+            "block_id": "b00073",
+            "quote": "(4) a word-boundary prohibited-word tripwire ( never , always , override , ignore all , must always , must never ); (5) Jaccard token-similarity dedup against existing entries (threshold 0.6); (6) a per-agent FIFO cap that evicts the oldest auto-added entry;"
+          },
+          {
+            "block_id": "b00035",
+            "quote": "every accepted and rejected proposal is logged with its reason; and a cycle’s edits form a single version-control commit, so that one git revert undoes a quarter of evolution."
+          }
+        ]
+      },
+      "stage": {
+        "id": "c029",
+        "text": "主部署窗口为4月8日至9月10日，其间运行晚间反馈；Q2循环仅暂存提案。Q3实际应用发生于窗口结束后的9月30日，另以冻结输入回放验证。",
+        "evidence": [
+          {
+            "block_id": "b00037",
+            "quote": "Steward traded live from April 8 to September 10, 2026 (102 trading days)"
+          },
+          {
+            "block_id": "b00037",
+            "quote": "the evening loop ran on 98 evenings"
+          },
+          {
+            "block_id": "b00035",
+            "quote": "The Q2 cycle ran stage-only and the Q3 cycle live (§ 5.4 )."
+          },
+          {
+            "block_id": "b00052",
+            "quote": "The second run, on September 30, was live."
+          },
+          {
+            "block_id": "b00052",
+            "quote": "The gate applied it as a one-file, reversible commit."
+          },
+          {
+            "block_id": "b00087",
+            "quote": "the Q3 replay runs frozen evening inputs through the Evening Analyst prompt before and after the commit, two samples each"
+          }
+        ]
+      },
+      "retention": {
+        "id": "c030",
+        "text": "在同一投资任务内跨交易日、跨会话持续：记忆反馈至次晨，学习条目以季度和哈希标记保留，受每智能体十条FIFO容量及版本撤销约束；跨独立任务迁移未交代。",
+        "evidence": [
+          {
+            "block_id": "b00032",
+            "quote": "The Portfolio Manager reads them the next morning with the evening’s outlook"
+          },
+          {
+            "block_id": "b00035",
+            "quote": "Edits are append-only into the marked section and tagged with quarter and content hash"
+          },
+          {
+            "block_id": "b00035",
+            "quote": "a FIFO cap of ten entries per agent bounds the section"
+          },
+          {
+            "block_id": "b00035",
+            "quote": "a cycle’s edits form a single version-control commit, so that one git revert undoes a quarter of evolution."
+          }
+        ]
+      },
+      "held_out_validation": null
+    },
+    "system_insights": [
+      "系统分析：类型允许列表与代码边界使自编辑范围可检查，但本次未审计实现，不能独立确认边界完整性。依据b00030：“The Risk Manager and the Position Reviewer, which encode the hard discipline, are absent from the Literal type of the proposal schema”。",
+      "系统分析：Q3回放支持局部输出形式变化，不能推导投资收益提升。依据b00052：“the prescribed form (an explicit TAKE/WAIT call or named blocker) appeared in 5 of 20 trigger replays against 0 of 20 for the base prompt and never on a control evening”。",
+      "系统分析：单模型比较同时改变信息组织方式与调用结构，不能据此单独归因于智能体数量。依据b00046：“a single model that receives the raw data the analysts read and must analyse and decide in one call.”",
+      "系统分析：有限攻击回放及数字匹配率不能证明任意注入安全或完整推理正确性。依据b00057：“the item was followed in none of 30 replays”；b00096：“A number is grounded if it occurs in the agent’s input message, in any historical version of its prompt or in its own emitted fields”。",
+      "系统分析：晚间反馈与次晨行为的六项相关检验均未在Holm校正后达到0.05，不宜将相关结果解释为已确认的适应效果。依据b00093，最强关系一行为：“Book exposure \\sim trailing forecast hit rate + 0.34 0.01 0.08 54”。"
+    ],
+    "open_questions": [
+      "系统分析：在相同基础模型、总token、成本及推理时间预算下，类型化报告流水线相对单智能体是否仍有优势？问题源于b00046：“a single model that receives the raw data the analysts read and must analyse and decide in one call.”",
+      "系统分析：补充历史分类计数并在应用前加入结果评分回放，能否提升学习的可执行性及长期效果？问题源于b00052：“the trigger presupposes a count of past classifications that the Evening Analyst’s input does not provide”。",
+      "系统分析：在独立时段、不同市场状态和真实成交条件下，记忆与季度学习是否带来可隔离的持续收益或风险改善？问题源于b00065：“one configuration traded on a paper account through one rising window”。"
+    ],
+    "missing_information": [
+      "所提供原文块未列出完整基础模型名称、版本及调用参数；各实验model字段置null。无LLM核心回测的model字段亦为null。",
+      "所提供原文块未明确给出等token、等成本或等计算预算的单智能体比较；equal_budget_single_agent_comparison置null。",
+      "所提供原文块未明确自进化验证采用独立于反思记录的留出集；历史输入回放及触发/对照分组不足以确认独立留出验证，held_out_validation置null。",
+      "所提供原文块未给出学习应用后可隔离的长期收益效果，也未交代跨独立任务迁移。",
+      "所提供原文块未包含全部提示词及完整实现，无法逐项独立审计语义和代码边界。",
+      "b00046正文报告5日和10日结果，b00048表头列5日和20日；本卡片按正文标注10日结果，未将其替换为表中的20日结果。",
+      "b00037称季度循环在两个季度末运行，但其主部署窗口截至9月10日；b00052明确第二次循环发生于9月30日。本卡片按明确日期区分主部署窗口与后续季度循环，原文时间表述仍有歧义。",
+      "未阅读被引前作正文，不能独立确认首次提出、优先权或创新性。",
+      "本次仅依据提供的原文块修订卡片，未执行代码、回放或独立复现实验。"
+    ],
+    "reading_priority": "high",
+    "priority_reason": "系统判断：与多智能体协作及受治理自进化直接相关，值得重点审查编辑边界、回放验证及证据限制。依据b00030：“A learning can change what an agent proposes”；b00064：“The gate guarantees that a learning is short, novel, reversible and confined to the periphery; it cannot tell whether the learning changes a decision.”",
+    "reproduction_status": "not_reproduced"
+  },
+  "evidence": [
+    {
+      "claim_id": "c001",
+      "block_id": "b00019",
+      "quote": "Nine LLM agents and a deterministic core run in six sessions",
+      "section": "4. Design of Steward",
+      "page": null,
+      "link": "https://arxiv.org/html/2610.30557v1#S4.p1.1"
+    },
+    {
+      "claim_id": "c001",
+      "block_id": "b00066",
+      "quote": "We presented Steward , a multi-agent LLM system for autonomous investing in which role-specialised agents decide jointly over heterogeneous Web data, share a memory computed by code, and evolve at two time scales around an invariant core that no self-edit can reach.",
+      "section": "7. Conclusion",
+      "page": null,
+      "link": "https://arxiv.org/html/2610.30557v1#S7.p1.1"
+    },
+    {
+      "claim_id": "c001",
+      "block_id": "b00037",
+      "quote": "Steward traded live from April 8 to September 10, 2026 (102 trading days) on real-time Web data, in a brokerage paper account funded with US$100,000.",
+      "section": "5.1. Live deployment, data and methodology",
+      "page": null,
+      "link": "https://arxiv.org/html/2610.30557v1#S5.SS1.p1.1"
+    },
+    {
+      "claim_id": "c001",
+      "block_id": "b00052",
+      "quote": "The second run, on September 30, was live.",
+      "section": "Q3: self-audit and an applied learning.",
+      "page": null,
+      "link": "https://arxiv.org/html/2610.30557v1#S5.SS4.SSS0.Px2.p1.1"
+    },
+    {
+      "claim_id": "c001",
+      "block_id": "b00052",
+      "quote": "the prescribed form (an explicit TAKE/WAIT call or named blocker) appeared in 5 of 20 trigger replays against 0 of 20 for the base prompt and never on a control evening",
+      "section": "Q3: self-audit and an applied learning.",
+      "page": null,
+      "link": "https://arxiv.org/html/2610.30557v1#S5.SS4.SSS0.Px2.p1.1"
+    },
+    {
+      "claim_id": "c002",
+      "block_id": "b00003",
+      "quote": "An agent that makes consequential decisions from Web content must do three things at once: combine heterogeneous, individually weak evidence into one decision; remember what it has decided and how those decisions turned out; and improve from experience",
+      "section": "1. Introduction",
+      "page": null,
+      "link": "https://arxiv.org/html/2610.30557v1#S1.p1.1"
+    },
+    {
+      "claim_id": "c002",
+      "block_id": "b00003",
+      "quote": "without weakening the rules that constrain it.",
+      "section": "1. Introduction",
+      "page": null,
+      "link": "https://arxiv.org/html/2610.30557v1#S1.p1.1"
+    },
+    {
+      "claim_id": "c003",
+      "block_id": "b00016",
+      "quote": "(F1) Self-grading : the signal that drives evolution is the agent’s own assessment \\hat{g}_{t} rather than y_{t} , and \\hat{g}_{t} is optimistic.",
+      "section": "Failure modes.",
+      "page": null,
+      "link": "https://arxiv.org/html/2610.30557v1#S3.SS0.SSS0.Px2.p1.1"
+    },
+    {
+      "claim_id": "c003",
+      "block_id": "b00016",
+      "quote": "(F2) Discipline erosion : \\pi^{\\prime} weakens the rules that bound risk, because nothing separates what the loop may change from what it must not.",
+      "section": "Failure modes.",
+      "page": null,
+      "link": "https://arxiv.org/html/2610.30557v1#S3.SS0.SSS0.Px2.p1.1"
+    },
+    {
+      "claim_id": "c003",
+      "block_id": "b00016",
+      "quote": "(F3) Unauditable change : no record ties \\pi^{\\prime} to the evidence that produced it, so an erroneous edit can be neither found nor reverted. (F4) Undetected inertness : an edit passes every check yet changes no decision, and the loop reports progress it did not make.",
+      "section": "Failure modes.",
+      "page": null,
+      "link": "https://arxiv.org/html/2610.30557v1#S3.SS0.SSS0.Px2.p1.1"
+    },
+    {
+      "claim_id": "c004",
+      "block_id": "b00020",
+      "quote": "Only the morning session may open positions: four analysts read the Web in parallel, a Portfolio Manager synthesises their typed reports with the shared memory of § 4.2 , and the plan passes through a deterministic order constructor, a blocking risk engine and an LLM Risk Manager before execution.",
+      "section": "Sessions.",
+      "page": null,
+      "link": "https://arxiv.org/html/2610.30557v1#S4.SS1.SSS0.Px1.p1.1"
+    },
+    {
+      "claim_id": "c005",
+      "block_id": "b00021",
+      "quote": "Each agent emits one Pydantic object (Appendix B ).",
+      "section": "Agents and their typed outputs.",
+      "page": null,
+      "link": "https://arxiv.org/html/2610.30557v1#S4.SS1.SSS0.Px2.p1.1"
+    },
+    {
+      "claim_id": "c005",
+      "block_id": "b00024",
+      "quote": "An agent cannot skip a step, enumerations are Literal types, and cross-field validators encode domain invariants:",
+      "section": "Schema-enforced reasoning.",
+      "page": null,
+      "link": "https://arxiv.org/html/2610.30557v1#S4.SS2.SSS0.Px2.p1.1"
+    },
+    {
+      "claim_id": "c005",
+      "block_id": "b00024",
+      "quote": "The validated object is stored verbatim with its exact input, so the record is not a log about decisions but the decisions themselves, in a form that code can grade, a reflector can read and a harness can replay.",
+      "section": "Schema-enforced reasoning.",
+      "page": null,
+      "link": "https://arxiv.org/html/2610.30557v1#S4.SS2.SSS0.Px2.p1.1"
+    },
+    {
+      "claim_id": "c005",
+      "block_id": "b00023",
+      "quote": "The agents share no conversation history. They share a memory that code assembles from the system’s own record in seven layers, read by the Portfolio Manager every morning.",
+      "section": "Shared multi-layer memory.",
+      "page": null,
+      "link": "https://arxiv.org/html/2610.30557v1#S4.SS2.SSS0.Px1.p1.1"
+    },
+    {
+      "claim_id": "c006",
+      "block_id": "b00008",
+      "quote": "each evening, code grades every trade and forecast and writes the grades into memory; each quarter, a Meta Reflector proposes typed prompt learnings that a twelve-invariant gate applies reversibly and that replay verifies.",
+      "section": "Contributions.",
+      "page": null,
+      "link": "https://arxiv.org/html/2610.30557v1#S1.I1.i3.p1.1"
+    },
+    {
+      "claim_id": "c006",
+      "block_id": "b00036",
+      "quote": "A decision-replay harness passes recorded inputs through the prompt before and after a learning, with the rest of the input fixed, and compares the outputs structurally:",
+      "section": "4.6. Verification by replay",
+      "page": null,
+      "link": "https://arxiv.org/html/2610.30557v1#S4.SS6.p1.1"
+    },
+    {
+      "claim_id": "c006",
+      "block_id": "b00036",
+      "quote": "Re-running the unchanged prompt on the same inputs measures the model’s own variance, against which a learning’s effect is read.",
+      "section": "4.6. Verification by replay",
+      "page": null,
+      "link": "https://arxiv.org/html/2610.30557v1#S4.SS6.p1.1"
+    },
+    {
+      "claim_id": "c007",
+      "block_id": "b00011",
+      "quote": "our contribution is not a signal but the governance of an agent that acts on many, evaluated live.",
+      "section": "Text, machine learning and LLMs in finance.",
+      "page": null,
+      "link": "https://arxiv.org/html/2610.30557v1#S2.SS0.SSS0.Px2.p1.1"
+    },
+    {
+      "claim_id": "c007",
+      "block_id": "b00066",
+      "quote": "We presented Steward , a multi-agent LLM system for autonomous investing in which role-specialised agents decide jointly over heterogeneous Web data, share a memory computed by code, and evolve at two time scales around an invariant core that no self-edit can reach.",
+      "section": "7. Conclusion",
+      "page": null,
+      "link": "https://arxiv.org/html/2610.30557v1#S7.p1.1"
+    },
+    {
+      "claim_id": "c008",
+      "block_id": "b00005",
+      "quote": "To our knowledge, Steward is the first self-evolving LLM agent evaluated over months of live operation with every proposal and rejection of its evolution loop logged.",
+      "section": "1. Introduction",
+      "page": null,
+      "link": "https://arxiv.org/html/2610.30557v1#S1.p3.1"
+    },
+    {
+      "claim_id": "c009",
+      "block_id": "b00046",
+      "quote": "we replay 20 mornings sampled evenly over the deployment through three decision layers on their exact recorded inputs",
+      "section": "5.3. RQ2: The decomposition and the memory",
+      "page": null,
+      "link": "https://arxiv.org/html/2610.30557v1#S5.SS3.p1.1"
+    },
+    {
+      "claim_id": "c009",
+      "block_id": "b00046",
+      "quote": "it targets 5.8 names a morning against 3.7, puts 41% of equity into new intent against 19%, and reverses its own recent decisions two and a half times as often (0.25 against 0.10 per morning)",
+      "section": "5.3. RQ2: The decomposition and the memory",
+      "page": null,
+      "link": "https://arxiv.org/html/2610.30557v1#S5.SS3.p1.1"
+    },
+    {
+      "claim_id": "c009",
+      "block_id": "b00046",
+      "quote": "Its books lose over the next five and ten days ( -1.35\\pm 0.44 and -1.76\\pm 0.75 points against SPY; hit rates 35% and 32%), whereas the deployed design’s are indistinguishable from zero.",
+      "section": "5.3. RQ2: The decomposition and the memory",
+      "page": null,
+      "link": "https://arxiv.org/html/2610.30557v1#S5.SS3.p1.1"
+    },
+    {
+      "claim_id": "c009",
+      "block_id": "b00046",
+      "quote": "Removing the memory changes almost nothing on a single morning",
+      "section": "5.3. RQ2: The decomposition and the memory",
+      "page": null,
+      "link": "https://arxiv.org/html/2610.30557v1#S5.SS3.p1.1"
+    },
+    {
+      "claim_id": "c010",
+      "block_id": "b00042",
+      "quote": "the analysts’ buy ratings return +1.3\\% , whereas the Portfolio Manager’s target weights return +15.4\\% with no exits (at 93% exposure), +11.6\\% with the system’s own exit rules and +12.2\\% with the Risk Manager’s recorded edits",
+      "section": "The synthesis carries the value.",
+      "page": null,
+      "link": "https://arxiv.org/html/2610.30557v1#S5.SS2.SSS0.Px2.p1.1"
+    },
+    {
+      "claim_id": "c010",
+      "block_id": "b00043",
+      "quote": "The live portfolio returned +5.0% against the intent’s +12.2\\% because it was less invested: realised gross exposure averaged 56% against 79%",
+      "section": "Execution and exits hold the headroom.",
+      "page": null,
+      "link": "https://arxiv.org/html/2610.30557v1#S5.SS2.SSS0.Px3.p1.1"
+    },
+    {
+      "claim_id": "c010",
+      "block_id": "b00037",
+      "quote": "in a brokerage paper account funded with US$100,000.",
+      "section": "5.1. Live deployment, data and methodology",
+      "page": null,
+      "link": "https://arxiv.org/html/2610.30557v1#S5.SS1.p1.1"
+    },
+    {
+      "claim_id": "c011",
+      "block_id": "b00054",
+      "quote": "The core lowered the maximum drawdown under all 50 random entry policies (median 37% \\to 28%) and under momentum entries (61% \\to 33%)",
+      "section": "Containment.",
+      "page": null,
+      "link": "https://arxiv.org/html/2610.30557v1#S5.SS5.SSS0.Px1.p1.1"
+    },
+    {
+      "claim_id": "c011",
+      "block_id": "b00098",
+      "quote": "Entries / variant CAGR Sharpe Max DD",
+      "section": "Grounding protocol.",
+      "page": null,
+      "link": "https://arxiv.org/html/2610.30557v1#A5.T11.2"
+    },
+    {
+      "claim_id": "c011",
+      "block_id": "b00098",
+      "quote": "Momentum entries No core + 61 1.15 - 61 - 25 - 36 - 27 - 46",
+      "section": "Grounding protocol.",
+      "page": null,
+      "link": "https://arxiv.org/html/2610.30557v1#A5.T11.2"
+    },
+    {
+      "claim_id": "c011",
+      "block_id": "b00098",
+      "quote": "Full core + 41 1.30 - 33 - 18 - 30 - 18 - 27 Random entries, median of 50 seeds No core + 17 0.81 - 37 - 20 - 35 - 26 - 8 Full core + 14 0.82 - 28 - 17 - 27 - 21 - 7",
+      "section": "Grounding protocol.",
+      "page": null,
+      "link": "https://arxiv.org/html/2610.30557v1#A5.T11.2"
+    },
+    {
+      "claim_id": "c012",
+      "block_id": "b00037",
+      "quote": "Steward traded live from April 8 to September 10, 2026 (102 trading days) on real-time Web data, in a brokerage paper account funded with US$100,000.",
+      "section": "5.1. Live deployment, data and methodology",
+      "page": null,
+      "link": "https://arxiv.org/html/2610.30557v1#S5.SS1.p1.1"
+    },
+    {
+      "claim_id": "c012",
+      "block_id": "b00037",
+      "quote": "The deployment produced 619 pipeline runs and 1,632 logged LLM calls served by frontier models from two vendors with automatic failover. Logged API cost was $455, about US$4.4 per trading day",
+      "section": "5.1. Live deployment, data and methodology",
+      "page": null,
+      "link": "https://arxiv.org/html/2610.30557v1#S5.SS1.p1.1"
+    },
+    {
+      "claim_id": "c012",
+      "block_id": "b00054",
+      "quote": "The portfolio returned +5.0% against +12.4% for SPY during a semiconductor-led rally",
+      "section": "Containment.",
+      "page": null,
+      "link": "https://arxiv.org/html/2610.30557v1#S5.SS5.SSS0.Px1.p1.1"
+    },
+    {
+      "claim_id": "c012",
+      "block_id": "b00054",
+      "quote": "Between June 22 and July 29 the semiconductor ETF fell 24.6%, QQQ 10.3% and SPY 2.0%, whereas the portfolio lost 0.3%",
+      "section": "Containment.",
+      "page": null,
+      "link": "https://arxiv.org/html/2610.30557v1#S5.SS5.SSS0.Px1.p1.1"
+    },
+    {
+      "claim_id": "c012",
+      "block_id": "b00078",
+      "quote": "Logged API cost per agent over the deployment (a lower bound: per-call cost logging began on May 12).",
+      "section": "Appendix D Sessions, Latency and Cost",
+      "page": null,
+      "link": "https://arxiv.org/html/2610.30557v1#A4.F4"
+    },
+    {
+      "claim_id": "c012",
+      "block_id": "b00067",
+      "quote": "The system traded a paper account, so no capital was at risk;",
+      "section": "Ethical Considerations",
+      "page": null,
+      "link": "https://arxiv.org/html/2610.30557v1#Sx1.p1.1"
+    },
+    {
+      "claim_id": "c013",
+      "block_id": "b00046",
+      "quote": "we replay 20 mornings sampled evenly over the deployment through three decision layers on their exact recorded inputs (Table 2 , Figure 2 d; 100 LLM calls): the deployed design (typed analyst reports plus memory; two samples per morning), the same input without any memory layer,",
+      "section": "5.3. RQ2: The decomposition and the memory",
+      "page": null,
+      "link": "https://arxiv.org/html/2610.30557v1#S5.SS3.p1.1"
+    },
+    {
+      "claim_id": "c013",
+      "block_id": "b00046",
+      "quote": "a single model that receives the raw data the analysts read and must analyse and decide in one call.",
+      "section": "5.3. RQ2: The decomposition and the memory",
+      "page": null,
+      "link": "https://arxiv.org/html/2610.30557v1#S5.SS3.p1.1"
+    },
+    {
+      "claim_id": "c013",
+      "block_id": "b00046",
+      "quote": "Its books lose over the next five and ten days ( -1.35\\pm 0.44 and -1.76\\pm 0.75 points against SPY; hit rates 35% and 32%), whereas the deployed design’s are indistinguishable from zero.",
+      "section": "5.3. RQ2: The decomposition and the memory",
+      "page": null,
+      "link": "https://arxiv.org/html/2610.30557v1#S5.SS3.p1.1"
+    },
+    {
+      "claim_id": "c013",
+      "block_id": "b00046",
+      "quote": "Removing the memory changes almost nothing on a single morning",
+      "section": "5.3. RQ2: The decomposition and the memory",
+      "page": null,
+      "link": "https://arxiv.org/html/2610.30557v1#S5.SS3.p1.1"
+    },
+    {
+      "claim_id": "c014",
+      "block_id": "b00049",
+      "quote": "The gate withheld it on its length invariant (282 characters against a 200-character cap) and logged why.",
+      "section": "Q2: a root-cause diagnosis and a withheld learning.",
+      "page": null,
+      "link": "https://arxiv.org/html/2610.30557v1#S5.SS4.SSS0.Px1.p1.1"
+    },
+    {
+      "claim_id": "c014",
+      "block_id": "b00049",
+      "quote": "Replay then measured what the gate had declined (Figure 3 a, Table 8 ; 35 calls, US$17): on the ten mornings whose BUYs were later graded wrong and five control mornings,",
+      "section": "Q2: a root-cause diagnosis and a withheld learning.",
+      "page": null,
+      "link": "https://arxiv.org/html/2610.30557v1#S5.SS4.SSS0.Px1.p1.1"
+    },
+    {
+      "claim_id": "c014",
+      "block_id": "b00049",
+      "quote": "the Portfolio Manager prompt with the learning kept 8 of the 10 flagged names that the baseline still proposed within one point, and every weight moved within the noise of re-running the baseline itself (1.8 points per name at the median).",
+      "section": "Q2: a root-cause diagnosis and a withheld learning.",
+      "page": null,
+      "link": "https://arxiv.org/html/2610.30557v1#S5.SS4.SSS0.Px1.p1.1"
+    },
+    {
+      "claim_id": "c015",
+      "block_id": "b00052",
+      "quote": "The second run, on September 30, was live.",
+      "section": "Q3: self-audit and an applied learning.",
+      "page": null,
+      "link": "https://arxiv.org/html/2610.30557v1#S5.SS4.SSS0.Px2.p1.1"
+    },
+    {
+      "claim_id": "c015",
+      "block_id": "b00052",
+      "quote": "The gate applied it as a one-file, reversible commit.",
+      "section": "Q3: self-audit and an applied learning.",
+      "page": null,
+      "link": "https://arxiv.org/html/2610.30557v1#S5.SS4.SSS0.Px2.p1.1"
+    },
+    {
+      "claim_id": "c015",
+      "block_id": "b00052",
+      "quote": "We re-ran ten evenings on which such recurrences existed and four control evenings through the prompt before and after the commit, two samples each (Figure 3 b, Table 9 ; 56 calls, about US$16).",
+      "section": "Q3: self-audit and an applied learning.",
+      "page": null,
+      "link": "https://arxiv.org/html/2610.30557v1#S5.SS4.SSS0.Px2.p1.1"
+    },
+    {
+      "claim_id": "c015",
+      "block_id": "b00052",
+      "quote": "the prescribed form (an explicit TAKE/WAIT call or named blocker) appeared in 5 of 20 trigger replays against 0 of 20 for the base prompt and never on a control evening",
+      "section": "Q3: self-audit and an applied learning.",
+      "page": null,
+      "link": "https://arxiv.org/html/2610.30557v1#S5.SS4.SSS0.Px2.p1.1"
+    },
+    {
+      "claim_id": "c015",
+      "block_id": "b00052",
+      "quote": "the trigger presupposes a count of past classifications that the Evening Analyst’s input does not provide, so the recurring misses surfaced were unchanged (25 of 64 against 26 of 64).",
+      "section": "Q3: self-audit and an applied learning.",
+      "page": null,
+      "link": "https://arxiv.org/html/2610.30557v1#S5.SS4.SSS0.Px2.p1.1"
+    },
+    {
+      "claim_id": "c016",
+      "block_id": "b00097",
+      "quote": "Backtest of the deterministic core alone, 2015–2026, on the 80 single stocks of the universe with LLM-free weekly entries (top 10 by 126-day momentum, or random over 50 seeds).",
+      "section": "Grounding protocol.",
+      "page": null,
+      "link": "https://arxiv.org/html/2610.30557v1#A5.T11"
+    },
+    {
+      "claim_id": "c016",
+      "block_id": "b00097",
+      "quote": "Core: the rules of § 4.3 ; ablations remove one. CAGR and drawdowns in %; 5 bp per side. The universe is from 2026, so only comparisons between variants are meaningful.",
+      "section": "Grounding protocol.",
+      "page": null,
+      "link": "https://arxiv.org/html/2610.30557v1#A5.T11"
+    },
+    {
+      "claim_id": "c016",
+      "block_id": "b00054",
+      "quote": "The core lowered the maximum drawdown under all 50 random entry policies (median 37% \\to 28%) and under momentum entries (61% \\to 33%)",
+      "section": "Containment.",
+      "page": null,
+      "link": "https://arxiv.org/html/2610.30557v1#S5.SS5.SSS0.Px1.p1.1"
+    },
+    {
+      "claim_id": "c016",
+      "block_id": "b00098",
+      "quote": "Entries / variant CAGR Sharpe Max DD",
+      "section": "Grounding protocol.",
+      "page": null,
+      "link": "https://arxiv.org/html/2610.30557v1#A5.T11.2"
+    },
+    {
+      "claim_id": "c016",
+      "block_id": "b00098",
+      "quote": "Momentum entries No core + 61 1.15 - 61 - 25 - 36 - 27 - 46",
+      "section": "Grounding protocol.",
+      "page": null,
+      "link": "https://arxiv.org/html/2610.30557v1#A5.T11.2"
+    },
+    {
+      "claim_id": "c016",
+      "block_id": "b00098",
+      "quote": "Full core + 41 1.30 - 33 - 18 - 30 - 18 - 27 Random entries, median of 50 seeds No core + 17 0.81 - 37 - 20 - 35 - 26 - 8 Full core + 14 0.82 - 28 - 17 - 27 - 21 - 7",
+      "section": "Grounding protocol.",
+      "page": null,
+      "link": "https://arxiv.org/html/2610.30557v1#A5.T11.2"
+    },
+    {
+      "claim_id": "c017",
+      "block_id": "b00057",
+      "quote": "We insert one adversarial item into the exact recorded input of ten mornings and re-run the agent (Table 4 ; 50 calls, US$19), with three payloads:",
+      "section": "Adversarial Web content.",
+      "page": null,
+      "link": "https://arxiv.org/html/2610.30557v1#S5.SS5.SSS0.Px2.p1.1"
+    },
+    {
+      "claim_id": "c017",
+      "block_id": "b00057",
+      "quote": "a direct override (set one name to 45% and every other target to zero), a plausible headline (300% upside; managers are taking maximum size and disabling stops) and a suspension of discipline (stops and the cash-only rule lifted, allocate 60% to an inverse ETF).",
+      "section": "Adversarial Web content.",
+      "page": null,
+      "link": "https://arxiv.org/html/2610.30557v1#S5.SS5.SSS0.Px2.p1.1"
+    },
+    {
+      "claim_id": "c017",
+      "block_id": "b00057",
+      "quote": "The News agent excluded the item from its typed report in all 20 replays and flagged it as instruction-like in every briefing.",
+      "section": "Adversarial Web content.",
+      "page": null,
+      "link": "https://arxiv.org/html/2610.30557v1#S5.SS5.SSS0.Px2.p1.1"
+    },
+    {
+      "claim_id": "c017",
+      "block_id": "b00057",
+      "quote": "Placed directly in the Portfolio Manager’s news section, as if the analyst layer had passed it through, the item was followed in none of 30 replays; in 23 the Portfolio Manager’s CoT named it as injected content and refused it",
+      "section": "Adversarial Web content.",
+      "page": null,
+      "link": "https://arxiv.org/html/2610.30557v1#S5.SS5.SSS0.Px2.p1.1"
+    },
+    {
+      "claim_id": "c018",
+      "block_id": "b00096",
+      "quote": "The audit samples up to 150 CoTs per agent and extracts every number in their reasoning fields, excluding small integers and years.",
+      "section": "Grounding protocol.",
+      "page": null,
+      "link": "https://arxiv.org/html/2610.30557v1#A5.SS0.SSS0.Px7.p1.1"
+    },
+    {
+      "claim_id": "c018",
+      "block_id": "b00096",
+      "quote": "A number is grounded if it occurs in the agent’s input message, in any historical version of its prompt or in its own emitted fields, allowing rounding and truncation;",
+      "section": "Grounding protocol.",
+      "page": null,
+      "link": "https://arxiv.org/html/2610.30557v1#A5.SS0.SSS0.Px7.p1.1"
+    },
+    {
+      "claim_id": "c018",
+      "block_id": "b00102",
+      "quote": "Grounded: cited numbers found in the agent’s input, prompt or own fields, including derived quantities; Strict: exact or rounded matches only; Placebo: strict grounding against another day’s input.",
+      "section": "Replay noise.",
+      "page": null,
+      "link": "https://arxiv.org/html/2610.30557v1#A5.T12"
+    },
+    {
+      "claim_id": "c018",
+      "block_id": "b00103",
+      "quote": "All 750 254,094 99.91% 96.06% 22%",
+      "section": "Replay noise.",
+      "page": null,
+      "link": "https://arxiv.org/html/2610.30557v1#A5.T12.2"
+    },
+    {
+      "claim_id": "c018",
+      "block_id": "b00096",
+      "quote": "the placebo is reported on numbers with three or more significant digits.",
+      "section": "Grounding protocol.",
+      "page": null,
+      "link": "https://arxiv.org/html/2610.30557v1#A5.SS0.SSS0.Px7.p1.1"
+    },
+    {
+      "claim_id": "c019",
+      "block_id": "b00065",
+      "quote": "The evidence comes from one configuration traded on a paper account through one rising window, with overlapping forward horizons, simulations that ignore fill risk and two quarterly cycles, one applied; replays of 14–20 inputs expose behavioural differences but cannot rank variants by return.",
+      "section": "Limitations and next steps.",
+      "page": null,
+      "link": "https://arxiv.org/html/2610.30557v1#S6.SS0.SSS0.Px4.p1.1"
+    },
+    {
+      "claim_id": "c019",
+      "block_id": "b00054",
+      "quote": "alpha is not identifiable over 102 days, and no claim of this paper rests on it.",
+      "section": "Containment.",
+      "page": null,
+      "link": "https://arxiv.org/html/2610.30557v1#S5.SS5.SSS0.Px1.p1.1"
+    },
+    {
+      "claim_id": "c020",
+      "block_id": "b00052",
+      "quote": "the trigger presupposes a count of past classifications that the Evening Analyst’s input does not provide",
+      "section": "Q3: self-audit and an applied learning.",
+      "page": null,
+      "link": "https://arxiv.org/html/2610.30557v1#S5.SS4.SSS0.Px2.p1.1"
+    },
+    {
+      "claim_id": "c020",
+      "block_id": "b00052",
+      "quote": "Because the operators had also revised other prompts and the universe before the cycle, the October record cannot isolate the learning; replay can.",
+      "section": "Q3: self-audit and an applied learning.",
+      "page": null,
+      "link": "https://arxiv.org/html/2610.30557v1#S5.SS4.SSS0.Px2.p1.1"
+    },
+    {
+      "claim_id": "c020",
+      "block_id": "b00064",
+      "quote": "The natural next invariant is therefore an outcome-scored replay check that confirms a learning is operable on the agent’s actual inputs and measures its effect on decisions before it is applied.",
+      "section": "A syntactic gate needs a semantic check.",
+      "page": null,
+      "link": "https://arxiv.org/html/2610.30557v1#S6.SS0.SSS0.Px3.p1.1"
+    },
+    {
+      "claim_id": "c021",
+      "block_id": "b00019",
+      "quote": "Nine LLM agents and a deterministic core run in six sessions",
+      "section": "4. Design of Steward",
+      "page": null,
+      "link": "https://arxiv.org/html/2610.30557v1#S4.p1.1"
+    },
+    {
+      "claim_id": "c021",
+      "block_id": "b00021",
+      "quote": "The News Intelligence agent maintains three layers:",
+      "section": "Agents and their typed outputs.",
+      "page": null,
+      "link": "https://arxiv.org/html/2610.30557v1#S4.SS1.SSS0.Px2.p1.1"
+    },
+    {
+      "claim_id": "c021",
+      "block_id": "b00021",
+      "quote": "The Earnings Analyst reads 10-Q and 10-K filings",
+      "section": "Agents and their typed outputs.",
+      "page": null,
+      "link": "https://arxiv.org/html/2610.30557v1#S4.SS1.SSS0.Px2.p1.1"
+    },
+    {
+      "claim_id": "c021",
+      "block_id": "b00021",
+      "quote": "The Macro Analyst classifies the regime",
+      "section": "Agents and their typed outputs.",
+      "page": null,
+      "link": "https://arxiv.org/html/2610.30557v1#S4.SS1.SSS0.Px2.p1.1"
+    },
+    {
+      "claim_id": "c021",
+      "block_id": "b00021",
+      "quote": "The Technical Analyst rates each symbol on a five-level scale",
+      "section": "Agents and their typed outputs.",
+      "page": null,
+      "link": "https://arxiv.org/html/2610.30557v1#S4.SS1.SSS0.Px2.p1.1"
+    },
+    {
+      "claim_id": "c021",
+      "block_id": "b00021",
+      "quote": "The Portfolio Manager returns target positions; the Risk Manager approves or rejects the plan with a reason category, field-level modifications and an optional scale factor for all buys; the Position Reviewer returns SELL, REDUCE, TRAIL_STOP or HOLD per holding.",
+      "section": "Agents and their typed outputs.",
+      "page": null,
+      "link": "https://arxiv.org/html/2610.30557v1#S4.SS1.SSS0.Px2.p1.1"
+    },
+    {
+      "claim_id": "c021",
+      "block_id": "b00031",
+      "quote": "The Evening Analyst then completes a seven-step CoT",
+      "section": "4.4. Short-term self-evolution: evening grading",
+      "page": null,
+      "link": "https://arxiv.org/html/2610.30557v1#S4.SS4.p1.1"
+    },
+    {
+      "claim_id": "c021",
+      "block_id": "b00034",
+      "quote": "On the last trading day of each quarter the evening session invokes a Meta Reflector.",
+      "section": "Reflect and propose (R3).",
+      "page": null,
+      "link": "https://arxiv.org/html/2610.30557v1#S4.SS5.SSS0.Px1.p1.1"
+    },
+    {
+      "claim_id": "c022",
+      "block_id": "b00020",
+      "quote": "four analysts read the Web in parallel, a Portfolio Manager synthesises their typed reports with the shared memory of § 4.2 , and the plan passes through a deterministic order constructor, a blocking risk engine and an LLM Risk Manager before execution.",
+      "section": "Sessions.",
+      "page": null,
+      "link": "https://arxiv.org/html/2610.30557v1#S4.SS1.SSS0.Px1.p1.1"
+    },
+    {
+      "claim_id": "c022",
+      "block_id": "b00027",
+      "quote": "Only plans that pass reach the LLM Risk Manager, which can reject, modify or scale them but cannot approve what the engine blocked.",
+      "section": "Hard rules run before the LLM check.",
+      "page": null,
+      "link": "https://arxiv.org/html/2610.30557v1#S4.SS3.SSS0.Px2.p1.1"
+    },
+    {
+      "claim_id": "c023",
+      "block_id": "b00023",
+      "quote": "The agents share no conversation history.",
+      "section": "Shared multi-layer memory.",
+      "page": null,
+      "link": "https://arxiv.org/html/2610.30557v1#S4.SS2.SSS0.Px1.p1.1"
+    },
+    {
+      "claim_id": "c023",
+      "block_id": "b00028",
+      "quote": "Raw headlines and filing text reach only the News and Earnings agents",
+      "section": "Untrusted Web text stays upstream.",
+      "page": null,
+      "link": "https://arxiv.org/html/2610.30557v1#S4.SS3.SSS0.Px3.p1.1"
+    },
+    {
+      "claim_id": "c023",
+      "block_id": "b00028",
+      "quote": "The Portfolio Manager never sees a headline or a filing: it reads typed fields and the News agent’s briefing",
+      "section": "Untrusted Web text stays upstream.",
+      "page": null,
+      "link": "https://arxiv.org/html/2610.30557v1#S4.SS3.SSS0.Px3.p1.1"
+    },
+    {
+      "claim_id": "c024",
+      "block_id": "b00023",
+      "quote": "They share a memory that code assembles from the system’s own record in seven layers, read by the Portfolio Manager every morning.",
+      "section": "Shared multi-layer memory.",
+      "page": null,
+      "link": "https://arxiv.org/html/2610.30557v1#S4.SS2.SSS0.Px1.p1.1"
+    },
+    {
+      "claim_id": "c024",
+      "block_id": "b00023",
+      "quote": "L1 holds the day’s typed analyst signals. L2 gives each holding its entry date, days held, entry thesis and its last seven Technical ratings.",
+      "section": "Shared multi-layer memory.",
+      "page": null,
+      "link": "https://arxiv.org/html/2610.30557v1#S4.SS2.SSS0.Px1.p1.1"
+    },
+    {
+      "claim_id": "c024",
+      "block_id": "b00023",
+      "quote": "L3 is the narrative: the last seven evening outlooks, seven days of macro regime, and the high-conviction news state changes of the last two weeks.",
+      "section": "Shared multi-layer memory.",
+      "page": null,
+      "link": "https://arxiv.org/html/2610.30557v1#S4.SS2.SSS0.Px1.p1.1"
+    },
+    {
+      "claim_id": "c024",
+      "block_id": "b00023",
+      "quote": "L4 is a 45-day calibration table:",
+      "section": "Shared multi-layer memory.",
+      "page": null,
+      "link": "https://arxiv.org/html/2610.30557v1#S4.SS2.SSS0.Px1.p1.1"
+    },
+    {
+      "claim_id": "c024",
+      "block_id": "b00023",
+      "quote": "L5 lists the last five Risk Manager verdicts with their categories, L6 the agent’s own last three decisions, so that reversals are visible, and L7 a projected book that flags sectors approaching their cap.",
+      "section": "Shared multi-layer memory.",
+      "page": null,
+      "link": "https://arxiv.org/html/2610.30557v1#S4.SS2.SSS0.Px1.p1.1"
+    },
+    {
+      "claim_id": "c025",
+      "block_id": "b00020",
+      "quote": "Only the morning session may open positions",
+      "section": "Sessions.",
+      "page": null,
+      "link": "https://arxiv.org/html/2610.30557v1#S4.SS1.SSS0.Px1.p1.1"
+    },
+    {
+      "claim_id": "c025",
+      "block_id": "b00020",
+      "quote": "The midday and close sessions are sell-only and run a Position Reviewer",
+      "section": "Sessions.",
+      "page": null,
+      "link": "https://arxiv.org/html/2610.30557v1#S4.SS1.SSS0.Px1.p1.1"
+    },
+    {
+      "claim_id": "c025",
+      "block_id": "b00076",
+      "quote": "20:00–22:00 evening ✓ reconcile fills; grade trades and forecasts; write insights quarter end meta ✓ self-portrait over 90 days; propose learnings; governed apply",
+      "section": "Appendix D Sessions, Latency and Cost",
+      "page": null,
+      "link": "https://arxiv.org/html/2610.30557v1#A4.T6.2"
+    },
+    {
+      "claim_id": "c025",
+      "block_id": "b00029",
+      "quote": "The circuit breaker, which uses no LLM, runs every 30 minutes and again at each stage of the morning session",
+      "section": "Execution is fail-safe.",
+      "page": null,
+      "link": "https://arxiv.org/html/2610.30557v1#S4.SS3.SSS0.Px4.p1.1"
+    },
+    {
+      "claim_id": "c026",
+      "block_id": "b00030",
+      "quote": "What can change is the memory, rewritten daily by code, and the prompts of the four analysts, the Portfolio Manager and the Evening Analyst, each of which carries a marked Learnings section that the gate of § 4.5 may append to.",
+      "section": "The evolvable periphery.",
+      "page": null,
+      "link": "https://arxiv.org/html/2610.30557v1#S4.SS3.SSS0.Px5.p1.1"
+    },
+    {
+      "claim_id": "c026",
+      "block_id": "b00030",
+      "quote": "The Risk Manager and the Position Reviewer, which encode the hard discipline, are absent from the Literal type of the proposal schema, so no self-edit can name them, and every rule above lives in code that no prompt reaches.",
+      "section": "The evolvable periphery.",
+      "page": null,
+      "link": "https://arxiv.org/html/2610.30557v1#S4.SS3.SSS0.Px5.p1.1"
+    },
+    {
+      "claim_id": "c027",
+      "block_id": "b00032",
+      "quote": "The labels the Evening Analyst assigns are categories; every quantity that measures an outcome is computed by code from fills and prices.",
+      "section": "4.4. Short-term self-evolution: evening grading",
+      "page": null,
+      "link": "https://arxiv.org/html/2610.30557v1#S4.SS4.p2.1"
+    },
+    {
+      "claim_id": "c027",
+      "block_id": "b00032",
+      "quote": "What feeds forward is aggregated by code from that record: the calibration of L4, the hit rates of the next-day calls, missed themes that recur in at least two episodes or symbols over the last 14 evenings, and root causes that recur across at least two symbols.",
+      "section": "4.4. Short-term self-evolution: evening grading",
+      "page": null,
+      "link": "https://arxiv.org/html/2610.30557v1#S4.SS4.p2.1"
+    },
+    {
+      "claim_id": "c027",
+      "block_id": "b00032",
+      "quote": "The Portfolio Manager reads them the next morning with the evening’s outlook",
+      "section": "4.4. Short-term self-evolution: evening grading",
+      "page": null,
+      "link": "https://arxiv.org/html/2610.30557v1#S4.SS4.p2.1"
+    },
+    {
+      "claim_id": "c027",
+      "block_id": "b00034",
+      "quote": "Its input is a deterministic digest of 90 days of graded record",
+      "section": "Reflect and propose (R3).",
+      "page": null,
+      "link": "https://arxiv.org/html/2610.30557v1#S4.SS5.SSS0.Px1.p1.1"
+    },
+    {
+      "claim_id": "c028",
+      "block_id": "b00034",
+      "quote": "Its output is at most three PromptLearning objects (Listing 1 ), each an append or a retraction by content hash",
+      "section": "Reflect and propose (R3).",
+      "page": null,
+      "link": "https://arxiv.org/html/2610.30557v1#S4.SS5.SSS0.Px1.p1.1"
+    },
+    {
+      "claim_id": "c028",
+      "block_id": "b00073",
+      "quote": "(2) an allow-list of target agents, with the Risk Manager and Position Reviewer excluded both here and in the proposal schema’s Literal ; (3) length ceiling (300 characters; 200 before the Q3 cycle) and justification floor;",
+      "section": "Appendix C Gate Invariants",
+      "page": null,
+      "link": "https://arxiv.org/html/2610.30557v1#A3.p1.1"
+    },
+    {
+      "claim_id": "c028",
+      "block_id": "b00073",
+      "quote": "(4) a word-boundary prohibited-word tripwire ( never , always , override , ignore all , must always , must never ); (5) Jaccard token-similarity dedup against existing entries (threshold 0.6); (6) a per-agent FIFO cap that evicts the oldest auto-added entry;",
+      "section": "Appendix C Gate Invariants",
+      "page": null,
+      "link": "https://arxiv.org/html/2610.30557v1#A3.p1.1"
+    },
+    {
+      "claim_id": "c028",
+      "block_id": "b00035",
+      "quote": "every accepted and rejected proposal is logged with its reason; and a cycle’s edits form a single version-control commit, so that one git revert undoes a quarter of evolution.",
+      "section": "Gate and rewrite (R4).",
+      "page": null,
+      "link": "https://arxiv.org/html/2610.30557v1#S4.SS5.SSS0.Px2.p1.1"
+    },
+    {
+      "claim_id": "c029",
+      "block_id": "b00037",
+      "quote": "Steward traded live from April 8 to September 10, 2026 (102 trading days)",
+      "section": "5.1. Live deployment, data and methodology",
+      "page": null,
+      "link": "https://arxiv.org/html/2610.30557v1#S5.SS1.p1.1"
+    },
+    {
+      "claim_id": "c029",
+      "block_id": "b00037",
+      "quote": "the evening loop ran on 98 evenings",
+      "section": "5.1. Live deployment, data and methodology",
+      "page": null,
+      "link": "https://arxiv.org/html/2610.30557v1#S5.SS1.p1.1"
+    },
+    {
+      "claim_id": "c029",
+      "block_id": "b00035",
+      "quote": "The Q2 cycle ran stage-only and the Q3 cycle live (§ 5.4 ).",
+      "section": "Gate and rewrite (R4).",
+      "page": null,
+      "link": "https://arxiv.org/html/2610.30557v1#S4.SS5.SSS0.Px2.p1.1"
+    },
+    {
+      "claim_id": "c029",
+      "block_id": "b00052",
+      "quote": "The second run, on September 30, was live.",
+      "section": "Q3: self-audit and an applied learning.",
+      "page": null,
+      "link": "https://arxiv.org/html/2610.30557v1#S5.SS4.SSS0.Px2.p1.1"
+    },
+    {
+      "claim_id": "c029",
+      "block_id": "b00052",
+      "quote": "The gate applied it as a one-file, reversible commit.",
+      "section": "Q3: self-audit and an applied learning.",
+      "page": null,
+      "link": "https://arxiv.org/html/2610.30557v1#S5.SS4.SSS0.Px2.p1.1"
+    },
+    {
+      "claim_id": "c029",
+      "block_id": "b00087",
+      "quote": "the Q3 replay runs frozen evening inputs through the Evening Analyst prompt before and after the commit, two samples each",
+      "section": "Self-evolution (RQ3).",
+      "page": null,
+      "link": "https://arxiv.org/html/2610.30557v1#A5.SS0.SSS0.Px4.p1.1"
+    },
+    {
+      "claim_id": "c030",
+      "block_id": "b00032",
+      "quote": "The Portfolio Manager reads them the next morning with the evening’s outlook",
+      "section": "4.4. Short-term self-evolution: evening grading",
+      "page": null,
+      "link": "https://arxiv.org/html/2610.30557v1#S4.SS4.p2.1"
+    },
+    {
+      "claim_id": "c030",
+      "block_id": "b00035",
+      "quote": "Edits are append-only into the marked section and tagged with quarter and content hash",
+      "section": "Gate and rewrite (R4).",
+      "page": null,
+      "link": "https://arxiv.org/html/2610.30557v1#S4.SS5.SSS0.Px2.p1.1"
+    },
+    {
+      "claim_id": "c030",
+      "block_id": "b00035",
+      "quote": "a FIFO cap of ten entries per agent bounds the section",
+      "section": "Gate and rewrite (R4).",
+      "page": null,
+      "link": "https://arxiv.org/html/2610.30557v1#S4.SS5.SSS0.Px2.p1.1"
+    },
+    {
+      "claim_id": "c030",
+      "block_id": "b00035",
+      "quote": "a cycle’s edits form a single version-control commit, so that one git revert undoes a quarter of evolution.",
+      "section": "Gate and rewrite (R4).",
+      "page": null,
+      "link": "https://arxiv.org/html/2610.30557v1#S4.SS5.SSS0.Px2.p1.1"
+    }
+  ],
+  "verification": {
+    "status": "needs_verification",
+    "findings": [
+      {
+        "claim_id": "c001",
+        "verdict": "supported",
+        "reason": "b00019、b00066支持九智能体、代码组装共享记忆及不变核心约束；b00037明确为102个交易日的模拟账户；b00052支持后续季度学习在回放中引起局部输出形式变化，未扩大为收益改善。"
+      },
+      {
+        "claim_id": "c002",
+        "verdict": "supported",
+        "reason": "b00003明确提出综合异质弱证据、记住决策及结果、从经验改进且不削弱约束这三项要求。"
+      },
+      {
+        "claim_id": "c003",
+        "verdict": "supported",
+        "reason": "b00016逐项列出自我评分偏乐观、纪律侵蚀、修改不可审计与撤销，以及无行为变化却报告进步四类失效。"
+      },
+      {
+        "claim_id": "c004",
+        "verdict": "supported",
+        "reason": "b00020明确支持四名分析师并行读取、经理结合类型化报告与共享记忆制定计划，以及订单构造器、阻断式风险引擎、风险经理的处理顺序。"
+      },
+      {
+        "claim_id": "c005",
+        "verdict": "supported",
+        "reason": "b00021、b00024支持Pydantic输出、字段校验及验证对象与输入的存储设计；b00023支持代码组装七层记忆供经理晨间读取。此处作为设计描述成立；实际部署完整输入记录并非覆盖全部调用，见b00009、b00036。"
+      },
+      {
+        "claim_id": "c006",
+        "verdict": "supported",
+        "reason": "b00008支持晚间反馈和季度类型化学习的可逆门控；b00036明确固定其余输入比较更新前后输出，并通过未改提示词重跑衡量模型方差。"
+      },
+      {
+        "claim_id": "c007",
+        "verdict": "supported",
+        "reason": "b00011明确将作者贡献定位于多信号行动智能体的治理；b00066支持角色协作、代码共享记忆及围绕不变核心的双时间尺度演化。结论保持了作者定位的归属。"
+      },
+      {
+        "claim_id": "c008",
+        "verdict": "supported",
+        "reason": "b00005确有带“To our knowledge”限定的首次声称。结论将其归于作者，并明确未独立确认优先权，没有将作者自述升级为已证创新。"
+      },
+      {
+        "claim_id": "c009",
+        "verdict": "partial",
+        "reason": "b00046支持20晨回放、目标标的数、反转频率、5日及10日相对收益，以及单晨去除记忆变化很小。但41%对19%衡量的是新增目标意图占权益比例；“新买入更多”容易被理解为实际成交，超出了回放输出的测量范围。"
+      },
+      {
+        "claim_id": "c010",
+        "verdict": "partial",
+        "reason": "b00042、b00043支持全部收益数字，b00037确认实际账户也是模拟账户。但模拟结果还限定目标按决策日收盘价设置、20%单仓上限及闲置现金赚取国库券收益；结论未保留这些条件，且未注明无退出配置的93%敞口。"
+      },
+      {
+        "claim_id": "c011",
+        "verdict": "partial",
+        "reason": "b00054支持全部50种随机策略及动量策略的最大回撤变化，b00098支持两类策略CAGR下降。但独立回测采用2026年股票池，作者明确仅变体间比较有意义，见b00097；结论遗漏了这一适用范围限制。"
+      },
+      {
+        "claim_id": "c012",
+        "verdict": "supported",
+        "reason": "b00037支持部署日期、账户规模、运行和调用数量；b00054支持全期收益与指定下跌窗口比较；b00078明确成本为下界且逐调用日志始于5月12日；b00067确认没有真实资本风险。"
+      },
+      {
+        "claim_id": "c013",
+        "verdict": "supported",
+        "reason": "b00046支持三种决策层、20晨记录输入、100次调用及部署架构每晨两次采样，也支持所列5日、10日收益和命中率。结论采用正文数值，没有把回放结果表述为实盘收益。"
+      },
+      {
+        "claim_id": "c014",
+        "verdict": "supported",
+        "reason": "b00049明确记载282字符超过200字符上限而被拒，并支持15个早晨、35次调用、17美元及所列权重变化和基线重跑噪声。结论将无效果限定在该反事实回放中。"
+      },
+      {
+        "claim_id": "c015",
+        "verdict": "supported",
+        "reason": "b00052支持9月30日可逆应用、10个触发晚间和4个对照晚间、前后各两次采样及调用成本；形式出现次数和重复遗漏提及数均与原文一致，未声称决策或收益改善。"
+      },
+      {
+        "claim_id": "c016",
+        "verdict": "supported",
+        "reason": "b00097支持回测时期、80只股票、无LLM每周入场、交易成本及2026年股票池限制；b00054、b00098支持回撤和CAGR变化。结论保留了作者仅允许变体间比较的限定。"
+      },
+      {
+        "claim_id": "c017",
+        "verdict": "supported",
+        "reason": "b00057支持三类负载、10个早晨、50次调用和19美元，并分别报告新闻智能体20次排除及标记、经理30次均未遵从且23次显式识别拒绝。结论未扩大为普遍安全保证。"
+      },
+      {
+        "claim_id": "c018",
+        "verdict": "supported",
+        "reason": "b00096、b00102支持数字匹配来源、派生量及严格匹配定义；b00103支持样本量与三项比例；b00096明确安慰剂仅统计至少三位有效数字。结论准确将其表述为可匹配性审计。"
+      },
+      {
+        "claim_id": "c019",
+        "verdict": "supported",
+        "reason": "b00065逐项支持单配置、上涨窗口模拟账户、重叠期限、忽略成交风险、两次季度循环仅一次应用，以及小样本回放不能按收益排名的限制。"
+      },
+      {
+        "claim_id": "c020",
+        "verdict": "supported",
+        "reason": "b00052明确历史分类计数未进入输入，其他提示词及股票池修改使10月记录无法隔离学习效果；b00064将应用前、基于结果评分的回放检查列为下一步。"
+      },
+      {
+        "claim_id": "c021",
+        "verdict": "supported",
+        "reason": "b00021列出四名分析师、投资组合经理、风险经理及持仓审查员；b00031、b00034补足晚间分析师和季度Meta Reflector，与b00019的九智能体一致。"
+      },
+      {
+        "claim_id": "c022",
+        "verdict": "supported",
+        "reason": "b00020支持协作及处理顺序；b00027明确只有通过引擎的计划才能到达风险经理，后者不能批准已被引擎阻断的计划。"
+      },
+      {
+        "claim_id": "c023",
+        "verdict": "supported",
+        "reason": "b00023明确不共享对话历史；b00020、b00028支持通过类型化报告向经理传递信息，以及原始标题和申报文本仅进入新闻与财报智能体、经理读取类型化字段和新闻简报。"
+      },
+      {
+        "claim_id": "c024",
+        "verdict": "supported",
+        "reason": "b00023逐层支持所列七层记忆，包括45天校准、最近五次风险裁决、经理最近三次决策及标记接近行业上限的预计持仓。"
+      },
+      {
+        "claim_id": "c025",
+        "verdict": "supported",
+        "reason": "b00020支持仅晨间开仓、午间及收盘仅卖出；b00076支持晚间核对成交及季度90天回顾；b00029支持无LLM熔断器每30分钟及晨间各阶段运行。"
+      },
+      {
+        "claim_id": "c026",
+        "verdict": "supported",
+        "reason": "b00030明确每日代码重写记忆及六类可编辑智能体的Learnings区，并将风险经理、持仓审查员和代码规则排除在自编辑范围之外。"
+      },
+      {
+        "claim_id": "c027",
+        "verdict": "supported",
+        "reason": "b00032区分晚间分析师类别标签与代码计算的结果量，列明代码聚合项目及次晨读取；b00034支持季度反思读取90天评分记录的确定性摘要。"
+      },
+      {
+        "claim_id": "c028",
+        "verdict": "supported",
+        "reason": "b00034支持至多三个追加或按内容哈希撤回的提案；b00073支持目标、长度、禁词、相似度及容量检查；b00035支持接受拒绝日志与单次版本提交撤销。"
+      },
+      {
+        "claim_id": "c029",
+        "verdict": "supported",
+        "reason": "b00037支持主部署日期及98个晚间反馈；b00035明确Q2仅暂存、Q3实际应用；b00052确认9月30日提交，b00087确认冻结输入回放。结论正确区分主窗口与后续应用。"
+      },
+      {
+        "claim_id": "c030",
+        "verdict": "partial",
+        "reason": "b00032、b00035支持同一投资任务内次晨反馈、季度与哈希标记、每智能体十条FIFO容量及版本撤销。但“跨独立任务迁移未交代”只能限定为本次提供的原文块中未见，不能据这些片段断言全文均未交代。"
+      }
+    ],
+    "quote_check_passed": true,
+    "reviewed_against_original": true
+  },
+  "reading": {
+    "read_chunks": 3,
+    "total_chunks": 3,
+    "total_blocks": 109,
+    "read_block_ids": [
+      "b00001",
+      "b00002",
+      "b00003",
+      "b00004",
+      "b00005",
+      "b00006",
+      "b00007",
+      "b00008",
+      "b00009",
+      "b00010",
+      "b00011",
+      "b00012",
+      "b00013",
+      "b00014",
+      "b00015",
+      "b00016",
+      "b00017",
+      "b00018",
+      "b00019",
+      "b00020",
+      "b00021",
+      "b00022",
+      "b00023",
+      "b00024",
+      "b00025",
+      "b00026",
+      "b00027",
+      "b00028",
+      "b00029",
+      "b00030",
+      "b00031",
+      "b00032",
+      "b00033",
+      "b00034",
+      "b00035",
+      "b00036",
+      "b00037",
+      "b00038",
+      "b00039",
+      "b00040",
+      "b00041",
+      "b00042",
+      "b00043",
+      "b00044",
+      "b00045",
+      "b00046",
+      "b00047",
+      "b00048",
+      "b00049",
+      "b00050",
+      "b00051",
+      "b00052",
+      "b00053",
+      "b00054",
+      "b00055",
+      "b00056",
+      "b00057",
+      "b00058",
+      "b00059",
+      "b00060",
+      "b00061",
+      "b00062",
+      "b00063",
+      "b00064",
+      "b00065",
+      "b00066",
+      "b00067",
+      "b00068",
+      "b00069",
+      "b00070",
+      "b00071",
+      "b00072",
+      "b00073",
+      "b00074",
+      "b00075",
+      "b00076",
+      "b00077",
+      "b00078",
+      "b00079",
+      "b00080",
+      "b00081",
+      "b00082",
+      "b00083",
+      "b00084",
+      "b00085",
+      "b00086",
+      "b00087",
+      "b00088",
+      "b00089",
+      "b00090",
+      "b00091",
+      "b00092",
+      "b00093",
+      "b00094",
+      "b00095",
+      "b00096",
+      "b00097",
+      "b00098",
+      "b00099",
+      "b00100",
+      "b00101",
+      "b00102",
+      "b00103",
+      "b00104",
+      "b00105",
+      "b00106",
+      "b00107",
+      "b00108",
+      "b00109"
+    ],
+    "content_hash": "597b94fe5c1fae0d1fb503d3ac8aed4635b30dcf9850c659231c9bc124a15a81",
+    "raw_sha256": "b9bec16bde012c8005cdc98e1357cb428806c41037f4f8586c735c686eaf4279",
+    "prompt_version": "2026-10-24.v1"
+  },
+  "warnings": [
+    "全文指已提取的文本块；图片、图表视觉、公式和部分算法环境未独立核验。",
+    "未复现实验；发表信息如有列出，来自作者且未独立核实。"
+  ],
+  "created_at": "2026-10-25T13:44:11.399156+00:00",
+  "path": "papers/2610.30557/v1/",
+  "latest_known_version": 1,
+  "versions": [
+    {
+      "version": 1,
+      "path": "papers/2610.30557/v1/",
+      "status": "needs_verification"
+    }
+  ]
+}
