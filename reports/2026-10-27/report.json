@@ -2,12 +2,12 @@
   "schema_version": 1,
   "day": "2026-10-27",
   "timezone": "Asia/Taipei",
-  "generated_at": "2026-10-27T09:09:41.355924+00:00",
+  "generated_at": "2026-10-27T09:18:08.147988+00:00",
   "discovery_status": "not_run",
   "stats": {
     "new": 0,
     "updated": 0,
-    "analyzed": 2,
+    "analyzed": 3,
     "abstract_only": 0,
     "discovery_failed": 0,
     "deferred": 0,
@@ -15,8 +15,8 @@
   },
   "library": {
     "total": 1004,
-    "analyzed": 8,
-    "pending": 986,
+    "analyzed": 9,
+    "pending": 985,
     "failed": 0,
     "unscreened": 821,
     "excluded": 10
@@ -29,6 +29,14 @@
       "path": "papers/2610.29292/v1/",
       "summary": "针对团队分数难以识别个体贡献的问题，CATS从固定智能体池出发，以跨候选轨迹归因更新通信边概率并剪枝；作者报告，在候选评估次数匹配时，BigCodeBench准确率比仅分数搜索高5.3个百分点，部署token少54%。",
       "reason": "系统分析：本文直接涉及多智能体筛选、信用反馈和离线结构适应；应重点审查预算公平性、归因有效性及通信边的独立收益（b00005、b00014、b00030、b00045）。"
+    },
+    {
+      "arxiv_id": "2610.26770",
+      "version": 2,
+      "title": "HarnessPro: Recursive Harness Self-Improvement with Pareto Optimization for Performance-Cost Trade-offs",
+      "path": "papers/2610.26770/v2/",
+      "summary": "HarnessPro 针对递归改进 harness 的性能—成本权衡，以多智能体诊断、生成测试和三档候选选择进行无标签进化；作者报告 GPT-5.5＋Codex 下 heavy 相对 RHO 平均提高通过率2.0个百分点、降低每任务成本26.1%。",
+      "reason": "系统判断：对关注多智能体 harness 自进化及性能—成本权衡的研究较有参考价值；所给材料包含候选选择、留出测试和组件消融证据，但总进化成本与等预算归因仍需核验。"
     },
     {
       "arxiv_id": "2610.27227",
