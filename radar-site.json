@@ -1,10 +1,10 @@
 {
   "schema_version": 1,
   "generator": "agent-paper-radar",
-  "content_sha256": "0de1b851dd5179d6de6c0b50ceaf6297520b0c3617d902d89d1c20e59a04cbae",
-  "generated_at": "2026-10-27T09:18:08.147988+00:00",
-  "paper_count": 9,
-  "version_count": 9,
+  "content_sha256": "a0267a688093d23b65ee7dc3718766b0b9498395b8a93920123dd54dea7426ff",
+  "generated_at": "2026-10-27T10:01:39.979559+00:00",
+  "paper_count": 10,
+  "version_count": 10,
   "report_count": 3,
-  "files_sha256": "228a100360b0718fc2986bbcfcda9a9d80d831b9c14cdea73e70c52b4e94812c"
+  "files_sha256": "248c8274d8c0aeb2ac5d84067635f3bbe8099593f81ddcc110eaec430009752b"
 }
