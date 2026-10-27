@@ -2,12 +2,12 @@
   "schema_version": 1,
   "day": "2026-10-27",
   "timezone": "Asia/Taipei",
-  "generated_at": "2026-10-27T10:01:39.979559+00:00",
+  "generated_at": "2026-10-27T10:12:44.882888+00:00",
   "discovery_status": "not_run",
   "stats": {
     "new": 0,
     "updated": 0,
-    "analyzed": 4,
+    "analyzed": 5,
     "abstract_only": 0,
     "discovery_failed": 0,
     "deferred": 0,
@@ -15,8 +15,8 @@
   },
   "library": {
     "total": 1004,
-    "analyzed": 10,
-    "pending": 984,
+    "analyzed": 11,
+    "pending": 983,
     "failed": 0,
     "unscreened": 821,
     "excluded": 10
