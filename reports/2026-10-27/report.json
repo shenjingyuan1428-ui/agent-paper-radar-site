@@ -2,12 +2,12 @@
   "schema_version": 1,
   "day": "2026-10-27",
   "timezone": "Asia/Taipei",
-  "generated_at": "2026-10-27T08:54:07.855138+00:00",
+  "generated_at": "2026-10-27T09:09:41.355924+00:00",
   "discovery_status": "not_run",
   "stats": {
     "new": 0,
     "updated": 0,
-    "analyzed": 1,
+    "analyzed": 2,
     "abstract_only": 0,
     "discovery_failed": 0,
     "deferred": 0,
@@ -15,8 +15,8 @@
   },
   "library": {
     "total": 1004,
-    "analyzed": 7,
-    "pending": 987,
+    "analyzed": 8,
+    "pending": 986,
     "failed": 0,
     "unscreened": 821,
     "excluded": 10
@@ -29,6 +29,14 @@
       "path": "papers/2610.29292/v1/",
       "summary": "针对团队分数难以识别个体贡献的问题，CATS从固定智能体池出发，以跨候选轨迹归因更新通信边概率并剪枝；作者报告，在候选评估次数匹配时，BigCodeBench准确率比仅分数搜索高5.3个百分点，部署token少54%。",
       "reason": "系统分析：本文直接涉及多智能体筛选、信用反馈和离线结构适应；应重点审查预算公平性、归因有效性及通信边的独立收益（b00005、b00014、b00030、b00045）。"
+    },
+    {
+      "arxiv_id": "2610.27227",
+      "version": 1,
+      "title": "Which Agent's Skill Should Change? Group-Relative Credit Assignment for Evolving Multi-Agent Teams",
+      "path": "papers/2610.27227/v1/",
+      "summary": "GRSE针对团队奖励难以归因到具体技能的问题，通过同题多次执行对比、结构化诊断和验证门控更新技能；作者报告其在HotpotQA及LoCoMo非开放域类别优于MASkills，LoCoMo多跳F1分别提升6.7和3.2。",
+      "reason": "系统判断：同题行为比较、技能更新门控和污染修复与多智能体自进化高度相关；优先核对预算差异、观察性归因及内部数值冲突。"
     }
   ],
   "path": "reports/2026-10-27/"
