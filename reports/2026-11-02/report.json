@@ -1,0 +1,26 @@
+{
+  "schema_version": 1,
+  "day": "2026-11-02",
+  "timezone": "America/Denver",
+  "generated_at": "2026-11-02T16:22:25.334537+00:00",
+  "discovery_status": "complete",
+  "stats": {
+    "new": 19,
+    "updated": 12,
+    "analyzed": 0,
+    "abstract_only": 0,
+    "discovery_failed": 0,
+    "deferred": 0,
+    "waiting_config": 0
+  },
+  "library": {
+    "total": 1202,
+    "analyzed": 15,
+    "pending": 1121,
+    "failed": 5,
+    "unscreened": 470,
+    "excluded": 61
+  },
+  "recommendations": [],
+  "path": "reports/2026-11-02/"
+}
