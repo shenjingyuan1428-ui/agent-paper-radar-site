@@ -1,0 +1,1600 @@
+{
+  "schema_version": 1,
+  "paper": {
+    "title": "SynCo: Data Synthesis Co-Training for Self-Evolving LLMs via Multi-Agent Reinforcement Learning",
+    "authors": [
+      "Wei Yang",
+      "Shawn Li",
+      "Yuehan Qin",
+      "Yawei Wang",
+      "Mingxi Wang",
+      "Shixuan Li",
+      "Tiankai Yang",
+      "Jiate Li",
+      "Jesse Thomason",
+      "Xuezhe Ma",
+      "Yue Zhao"
+    ],
+    "abstract": "Self-evolving LLM agents promise to improve autonomously through continual interaction and learning, reducing their dependence on manually curated supervision. Realizing this promise requires not only updating the agent, but also evolving its training experience as its capabilities change. However, most existing pipelines rely on static datasets or separately updated synthesis models, causing previously useful tasks to become trivial while overly difficult tasks remain uninformative. This growing mismatch between agent capability and training experience limits sustained self-improvement. To address this problem, we propose SynCo, an agentic data synthesis co-training framework for self-evolving LLMs based on multi-agent reinforcement learning. SynCo jointly optimizes two independently parameterized agents: a Synthesizer that constructs training tasks from the Reasoner's evolving capability state, and a Reasoner that learns from the resulting experience. Each synthesized task induces multiple Reasoner rollouts whose outcomes provide complementary rewards to both agents. Correctness feedback improves the Reasoner, while task quality, answer reliability, and outcome-grounded teachability guide the Synthesizer. Their updates are fed back into subsequent synthesis rounds, allowing the task-solving policy and its training distribution to evolve together. Extensive experiments across eight mathematical reasoning benchmarks demonstrate that SynCo substantially outperforms a broad range of existing synthetic-data methods and controlled baselines, achieving the strongest overall performance while deriving most of its gains from previously unsolved problems.",
+    "categories": [
+      "cs.AI"
+    ],
+    "first_submitted_at": "2026-10-08T06:40:18Z",
+    "updated_at": "2026-10-08T06:40:18Z",
+    "doi": null,
+    "journal_ref": null,
+    "arxiv_id": "2610.11345",
+    "version": 1,
+    "abstract_url": "https://arxiv.org/abs/2610.11345v1",
+    "pdf_url": "https://arxiv.org/pdf/2610.11345v1"
+  },
+  "topics": [
+    "multi_agent",
+    "self_evolution",
+    "intersection"
+  ],
+  "status": "analyzed",
+  "coverage": "full_text",
+  "topic_status": "confirmed",
+  "analysis": {
+    "one_sentence": {
+      "id": "c001",
+      "text": "SynCo针对训练任务与学习者能力失配，以同批在线交互联合优化任务合成器和解题器；作者报告Qwen3-8B在八个数学基准上平均准确率达78.72%，较冻结合成器提高2.87个百分点。",
+      "evidence": [
+        {
+          "block_id": "b00002",
+          "quote": "Tasks that were once informative may become trivial, whereas tasks far beyond the agent’s competence continue to provide little useful learning signal."
+        },
+        {
+          "block_id": "b00021",
+          "quote": "Both policies are updated from the same online batch using agent-specific group-relative policy optimization, forming a unified co-training process rather than sequential synthesis and learning."
+        },
+        {
+          "block_id": "b00052",
+          "quote": "Reasoning accuracy (%) across eight mathematical reasoning benchmarks. Vanilla denotes the initial Qwen3-8B model."
+        },
+        {
+          "block_id": "b00055",
+          "quote": "The frozen-Synthesizer baseline improves further to 75.85%, whereas SynCo reaches 78.72%, outperforming the strongest external baseline by 3.76 percentage points, Frozen by 2.87 points, and Vanilla by 6.36 points."
+        }
+      ]
+    },
+    "research_problem": [
+      {
+        "id": "c002",
+        "text": "作者认为，学习者进步后原有任务可能过易，过难任务仍缺乏有效信号；部分既有流程按旧检查点生成任务后再训练，未从同次在线交互联合优化生成与解题策略。",
+        "evidence": [
+          {
+            "block_id": "b00002",
+            "quote": "Tasks that were once informative may become trivial, whereas tasks far beyond the agent’s competence continue to provide little useful learning signal."
+          },
+          {
+            "block_id": "b00003",
+            "quote": "Many existing frameworks still alternate between generating tasks from a previous learner checkpoint and subsequently training the learner on the resulting data"
+          },
+          {
+            "block_id": "b00003",
+            "quote": "Although this enables iterative adaptation, the synthesis policy and the task policy are not optimized together from the same online interaction."
+          }
+        ]
+      },
+      {
+        "id": "c003",
+        "text": "任务有效、新颖或更难，并不保证当前学习者获得有效组相对优化信号；关键是采样轨迹组能否产生差异化反馈。",
+        "evidence": [
+          {
+            "block_id": "b00057",
+            "quote": "These results distinguish task validity and diversity from realized optimization utility: well-formed and novel tasks may still provide no effective policy gradient for the current Reasoner."
+          },
+          {
+            "block_id": "b00143",
+            "quote": "This distinction is important under group-relative optimization: a task can become substantially harder while remaining equally uninformative if all sampled trajectories still receive the same outcome."
+          }
+        ]
+      }
+    ],
+    "method_steps": [
+      {
+        "id": "c004",
+        "text": "结合任务池统计、近期能力诊断和拒绝反馈生成任务；检查结构、适定性、答案一致性及冗余，并进行独立解共识检查。Reasoner仅接收题目。",
+        "evidence": [
+          {
+            "block_id": "b00119",
+            "quote": "At each synthesis iteration, the placeholders in the Synthesizer user prompt are populated using the current synthetic-pool statistics, the Reasoner’s recent capability diagnostics, and feedback from rejected tasks."
+          },
+          {
+            "block_id": "b00103",
+            "quote": "The verifier checks schema completeness, problem well-posedness, answer consistency, output validity, and redundancy with recently generated tasks. We additionally apply an independent consensus check to filter tasks whose reference answers are insufficiently supported by independent solutions."
+          },
+          {
+            "block_id": "b00119",
+            "quote": "The Reasoner receives only the generated problem statement; all pedagogical metadata, reference solutions, and verification information are reserved for task validation and reward computation."
+          }
+        ]
+      },
+      {
+        "id": "c005",
+        "text": "每轮生成32题，每个获准任务采样4条轨迹。Reasoner按正确性和格式获1、0.9或0奖励；合成器即时奖励为质量门控×可靠性门控×T(μ)，其中G(v)=clip((v−0.5)/0.5,0,1)，T(μ)=2min(μ,1−μ)。拒绝任务奖励−0.5，非空输出另加0.1。",
+        "evidence": [
+          {
+            "block_id": "b00118",
+            "quote": "Each training iteration contains 32 synthesized tasks, and the Reasoner samples K=4 independent trajectories for every admitted task."
+          },
+          {
+            "block_id": "b00104",
+            "quote": "For the Reasoner, each rollout receives a correctness-based reward: 1.0 for a correct answer in the prescribed format, 0.9 for a correct answer recovered without that format, and 0 otherwise."
+          },
+          {
+            "block_id": "b00105",
+            "quote": "r_{S,t}^{\\mathrm{imm}}=G_{q}\\!\\left(r_{t}^{\\mathrm{quality}}\\right)G_{r}\\!\\left(r_{t}^{\\mathrm{reliability}}\\right)T(\\mu_{t}), (23)"
+          },
+          {
+            "block_id": "b00107",
+            "quote": "G(v)=\\operatorname{clip}\\left(\\frac{v-0.5}{0.5},0,1\\right). (24)"
+          },
+          {
+            "block_id": "b00110",
+            "quote": "T(\\mu_{t})=\\begin{cases}2\\mu_{t},&\\mu_{t}\\leq 0.5,\\\\ 2(1-\\mu_{t}),&\\mu_{t}>0.5.\\end{cases} (25)"
+          },
+          {
+            "block_id": "b00112",
+            "quote": "Tasks rejected by the verifier receive an immediate Synthesizer reward of -0.5 and are excluded from Reasoner training. The training framework additionally applies a constant 0.1 bonus to non-empty model outputs."
+          }
+        ]
+      },
+      {
+        "id": "c006",
+        "text": "从同一在线批次分别更新两个策略；交互信息及拒绝原因进入持续记忆，重建下一轮上下文，使策略和训练分布共同变化。",
+        "evidence": [
+          {
+            "block_id": "b00021",
+            "quote": "Both policies are updated from the same online batch using agent-specific group-relative policy optimization, forming a unified co-training process rather than sequential synthesis and learning."
+          },
+          {
+            "block_id": "b00045",
+            "quote": "To sustain self-evolution, each interaction batch is fed back into a persistent memory that reconstructs the learner state and conditions the next synthesis round."
+          },
+          {
+            "block_id": "b00046",
+            "quote": "Rejected tasks and their failure reasons are also retained to discourage repeated malformed, unreliable, or redundant generations."
+          },
+          {
+            "block_id": "b00051",
+            "quote": "Compared with \\widetilde{\\mathcal{D}}_{t} , this distribution changes through both a renewed context and an updated synthesis policy."
+          }
+        ]
+      }
+    ],
+    "author_contributions": [
+      {
+        "id": "c007",
+        "text": "作者自述贡献：将任务合成与任务学习表述为耦合多智能体强化学习，在统一在线过程中联合优化Synthesizer与Reasoner；不据此确认创新优先权。",
+        "evidence": [
+          {
+            "block_id": "b00007",
+            "quote": "We formulate agentic data synthesis and task learning as a coupled multi-agent reinforcement learning problem, and propose SynCo to jointly optimize a Synthesizer and a Reasoner within a unified online training process."
+          }
+        ]
+      },
+      {
+        "id": "c008",
+        "text": "作者自述贡献：显式分析合成任务是否提供有效梯度信号，区分粗粒度难度、静态任务质量与当前学习者的实际优化效用。",
+        "evidence": [
+          {
+            "block_id": "b00080",
+            "quote": "Beyond final performance, we explicitly analyze whether synthesized tasks are gradient-bearing, thereby distinguishing coarse difficulty and static data quality from the realized optimization utility observed under the current Reasoner."
+          }
+        ]
+      }
+    ],
+    "reported_comparisons": [
+      {
+        "id": "c009",
+        "text": "8B主比较中，SynCo平均准确率78.72%，Frozen为75.85%，最强外部基线ScaleQuest-Math为74.96%；静态池GRPO、拒绝采样SFT和离线增强GRPO分别为71.75%、72.23%、73.13%。",
+        "evidence": [
+          {
+            "block_id": "b00052",
+            "quote": "Reasoning accuracy (%) across eight mathematical reasoning benchmarks. Vanilla denotes the initial Qwen3-8B model."
+          },
+          {
+            "block_id": "b00055",
+            "quote": "among them, ScaleQuest-Math is the strongest with 74.96%, while the controlled Static-Pool GRPO, Reject-Sample SFT, and Offline-Augment GRPO baselines reach 71.75%, 72.23%, and 73.13%, respectively."
+          },
+          {
+            "block_id": "b00055",
+            "quote": "The frozen-Synthesizer baseline improves further to 75.85%, whereas SynCo reaches 78.72%, outperforming the strongest external baseline by 3.76 percentage points, Frozen by 2.87 points, and Vanilla by 6.36 points."
+          }
+        ]
+      },
+      {
+        "id": "c010",
+        "text": "固定终点检查点下，仅汇总GSM-Hard、MATH-500、GSM8K、SVAMP四项：初始错误题SynCo解出283/878，Frozen为238/878；初始正确题保留2,533/2,560与2,522/2,560。相对Frozen的净增解出数为56，其中45（80.4%）来自初始错误子集。",
+        "evidence": [
+          {
+            "block_id": "b00131",
+            "quote": "Figure 7 shows that this pattern holds consistently across all four benchmarks. On GSM-Hard, the Learn subset contributes +21 of the +27 net gain, compared with +6 from Retain. Similarly, Learn contributes +9 of +11 on MATH-500, +11 of +13 on GSM8K, and +4 of +5 on SVAMP."
+          },
+          {
+            "block_id": "b00130",
+            "quote": "Both methods are evaluated at fixed terminal checkpoints, avoiding benchmark-specific checkpoint selection."
+          },
+          {
+            "block_id": "b00130",
+            "quote": "On the 2,560 initially correct examples, the two variants remain close: SynCo retains 2,533 examples (98.95%), compared with 2,522 (98.52%) for the frozen variant, yielding 11 additional retained solutions."
+          },
+          {
+            "block_id": "b00130",
+            "quote": "The difference is substantially larger on the 878 initially incorrect examples, where SynCo solves 283 (32.23%) compared with 238 (27.11%) for Frozen. Thus, the Learn subset contributes 45 of the 56 additional solved examples, accounting for 80.4% of the overall advantage."
+          }
+        ]
+      },
+      {
+        "id": "c011",
+        "text": "离线重排既有任务池的最高四分位中，门控奖励、可教性排序的有效梯度任务比例为62.3%、64.6%，质量、新颖性排序为12.8%、12.0%，全池为16.2%。作者明确这属于诊断分析，并非因果训练消融。",
+        "evidence": [
+          {
+            "block_id": "b00061",
+            "quote": "Tasks are reranked offline using different signals, and the proportion of gradient-bearing tasks in the top-ranked quartile is reported."
+          },
+          {
+            "block_id": "b00062",
+            "quote": "Relative to the 16.2% gradient-bearing prevalence in the full task pool, ranking by the SynCo gated reward increases this proportion to 62.3%, while teachability alone reaches 64.6%. In contrast, quality and novelty alone yield only 12.8% and 12.0%, respectively, both below the pool prevalence."
+          },
+          {
+            "block_id": "b00062",
+            "quote": "Because this analysis reranks an already collected task pool, it should be interpreted as a diagnostic analysis rather than a causal training ablation;"
+          }
+        ]
+      }
+    ],
+    "experiments": [
+      {
+        "id": "c012",
+        "text": "八个数学基准主实验；外部发布检查点直接评估，合成语料比较则控制题数和下游优化设置，两类比较的预算控制范围不同。",
+        "evidence": [
+          {
+            "block_id": "b00054",
+            "quote": "We evaluate mathematical reasoning on eight benchmarks: GSM8K, SVAMP, ASDiv, GSM-Hard, MATH-500, AIME24, AIME25, and Minerva, reporting answer accuracy under a unified verification protocol."
+          },
+          {
+            "block_id": "b00052",
+            "quote": "Avg. is the unweighted average across all benchmarks."
+          },
+          {
+            "block_id": "b00055",
+            "quote": "The frozen-Synthesizer baseline improves further to 75.85%, whereas SynCo reaches 78.72%, outperforming the strongest external baseline by 3.76 percentage points, Frozen by 2.87 points, and Vanilla by 6.36 points."
+          },
+          {
+            "block_id": "b00055",
+            "quote": "among them, ScaleQuest-Math is the strongest with 74.96%"
+          },
+          {
+            "block_id": "b00118",
+            "quote": "We initialize the Synthesizer and the Reasoner as two independently parameterized copies of Qwen3-8B, and additionally repeat the main comparison with Qwen3-4B."
+          },
+          {
+            "block_id": "b00118",
+            "quote": "Each training iteration contains 32 synthesized tasks, and the Reasoner samples K=4 independent trajectories for every admitted task."
+          },
+          {
+            "block_id": "b00118",
+            "quote": "The Qwen3-8B experiments are distributed across two 8-GPU worker groups, one for each agent."
+          },
+          {
+            "block_id": "b00116",
+            "quote": "For these baselines, we directly use the authors’ publicly released checkpoints without additional training or adaptation, and evaluate them using exactly the same mathematical evaluation protocol as SynCo."
+          },
+          {
+            "block_id": "b00117",
+            "quote": "For each corpus, we sample exactly 2,940 unique synthetic problems, matching the number of verified training tasks used by SynCo, and train the same Qwen3 learner using the same GRPO implementation, rollout configuration, optimizer settings, and total optimization budget as our controlled static-data baseline."
+          }
+        ],
+        "task": "GSM8K、SVAMP、ASDiv、GSM-Hard、MATH-500、AIME24、AIME25、Minerva数学推理",
+        "model": "两个独立参数的Qwen3-8B",
+        "baseline": "Vanilla、Frozen Synthesizer、ScaleQuest-Math及其他外部检查点和合成语料基线",
+        "metric": "统一验证的答案准确率；八基准未加权平均",
+        "result": "SynCo 78.72%，Frozen 75.85%，ScaleQuest-Math 74.96%；较Vanilla提高6.36个百分点。",
+        "resource_conditions": "每轮32题，每个获准任务4条轨迹；两个各8 GPU工作组。外部语料各采样2,940题，其下游GRPO、rollout、优化器及总优化预算与受控静态数据基线匹配。"
+      },
+      {
+        "id": "c013",
+        "text": "Qwen3-4B跨规模比较同样获得平均收益，但并非逐基准全面占优。",
+        "evidence": [
+          {
+            "block_id": "b00123",
+            "quote": "Reasoning accuracy (%) across eight mathematical reasoning benchmarks using Qwen3-4B."
+          },
+          {
+            "block_id": "b00123",
+            "quote": "Avg. is the unweighted average across all benchmarks."
+          },
+          {
+            "block_id": "b00122",
+            "quote": "conditioning a frozen Synthesizer on the evolving Reasoner raises the average accuracy from 70.14% to 73.72%, while jointly optimizing the Synthesizer further improves it to 75.20%."
+          },
+          {
+            "block_id": "b00122",
+            "quote": "SynCo improves over its frozen counterpart on seven of eight benchmarks"
+          },
+          {
+            "block_id": "b00122",
+            "quote": "While EnvScaler attains stronger results on AIME24 and AIME25, SynCo performs more consistently across the broader benchmark suite"
+          },
+          {
+            "block_id": "b00118",
+            "quote": "The Qwen3-4B experiments follow the same training protocol and hyperparameters except for backbone-specific inference configurations."
+          }
+        ],
+        "task": "八个数学推理基准的跨规模评估",
+        "model": "Qwen3-4B",
+        "baseline": "Vanilla、Frozen Synthesizer、EnvScaler",
+        "metric": "八基准未加权平均答案准确率",
+        "result": "SynCo 75.20%，Frozen 73.72%，Vanilla 70.14%；七项超过Frozen；EnvScaler在AIME24和AIME25更强。",
+        "resource_conditions": "沿用8B训练协议及超参数，但采用骨干特定推理配置；4B专属硬件条件未明确。"
+      },
+      {
+        "id": "c014",
+        "text": "作者报告100步效率比较的计算成本相当；有效任务产出仅在双方共同有效日志区间统计，提升幅度有限。",
+        "evidence": [
+          {
+            "block_id": "b00147",
+            "quote": "SynCo (Frozen Synth.) 100 45.8 s 45.0 s 341.6 s SynCo 100 45.1 s 44.6 s 343.5 s"
+          },
+          {
+            "block_id": "b00067",
+            "quote": "Because both variants share the same Reasoner optimization budget and per-task rollout configuration, the comparison isolates the effect of adapting the synthesis policy itself."
+          },
+          {
+            "block_id": "b00150",
+            "quote": "Productive-task statistics are computed over steps 13–70, the interval with valid logging for both variants."
+          },
+          {
+            "block_id": "b00152",
+            "quote": "The productive-task rate increases from 13.7% under Frozen to 14.5% with SynCo , corresponding to 4.38 versus 4.64 productive tasks per batch of 32."
+          },
+          {
+            "block_id": "b00151",
+            "quote": "Because the runs were executed independently, these small wall-clock differences should be interpreted as comparable computational profiles rather than evidence that either variant is intrinsically faster."
+          },
+          {
+            "block_id": "b00153",
+            "quote": "Across 100 training steps, SynCo generates 3,200 task candidates, of which 2,940 pass verification, yielding a 91.9% acceptance rate."
+          }
+        ],
+        "task": "在线联合训练的耗时与有效任务产出",
+        "model": null,
+        "baseline": "SynCo (Frozen Synth.)",
+        "metric": "平均更新耗时、端到端单步耗时中位数、有效任务率及每批有效任务数",
+        "result": "SynCo/Frozen：更新45.1/45.8秒，端到端343.5/341.6秒，有效任务率14.5%/13.7%，每批4.64/4.38题；SynCo生成3,200题，验证通过2,940题。",
+        "resource_conditions": "双方各100步，匹配Reasoner优化预算与每题rollout配置；产出统计限第13—70步；两次运行独立执行。"
+      }
+    ],
+    "limitations": [
+      {
+        "id": "c015",
+        "text": "作者承认课程逐渐落后于能力边界：有效梯度任务比例从首桶31.3%降至末桶9.5%，全对比例从34.4%升至59.9%；质量和新颖性仍高，但优化价值下降。",
+        "evidence": [
+          {
+            "block_id": "b00126",
+            "quote": "Gradient-bearing tasks decrease from 31.3% in the earliest bucket to 9.5% in the final bucket, while the all-correct proportion rises from 34.4% to 59.9%."
+          },
+          {
+            "block_id": "b00126",
+            "quote": "Meanwhile, task quality remains high and novelty increases, showing that a curriculum can remain valid and diverse while progressively losing optimization value."
+          }
+        ]
+      },
+      {
+        "id": "c016",
+        "text": "2,940个验证任务中仅475个（16.2%）产生非退化组相对反馈；“可学习”标签的预测相关性仅0.009。可教性在观察轨迹后计算，其高相关源于构造，不能作为事前预测能力的证据。",
+        "evidence": [
+          {
+            "block_id": "b00125",
+            "quote": "Table 5 provides a detailed decomposition of the 2,940 verified tasks collected during co-training."
+          },
+          {
+            "block_id": "b00125",
+            "quote": "Only 475 tasks (16.2%) satisfy this condition, compared with 994 (33.8%) that are uniformly incorrect and 1,471 (50.0%) that are uniformly correct."
+          },
+          {
+            "block_id": "b00144",
+            "quote": "Treating the Synthesizer’s learnable label as a binary predictor of gradient-bearing tasks yields a correlation of only 0.009 , with 16.8% precision and 22.3% recall."
+          },
+          {
+            "block_id": "b00145",
+            "quote": "By contrast, outcome-grounded teachability is computed after observing the Reasoner’s rollouts and is strongly aligned with the gradient-bearing indicator ( r=0.934 ) by construction."
+          }
+        ]
+      },
+      {
+        "id": "c017",
+        "text": "课程分析未记录精确迭代编号，只能用生成顺序近似训练进度；效率比较独立运行，小幅耗时差异不能证明固有速度优势。",
+        "evidence": [
+          {
+            "block_id": "b00056",
+            "quote": "Generation order approximates training progression because exact iteration indices were not recorded."
+          },
+          {
+            "block_id": "b00151",
+            "quote": "Because the runs were executed independently, these small wall-clock differences should be interpreted as comparable computational profiles rather than evidence that either variant is intrinsically faster."
+          }
+        ]
+      }
+    ],
+    "multi_agent": {
+      "roles": {
+        "id": "c018",
+        "text": "两个独立参数智能体：Synthesizer生成训练任务，Reasoner学习解题；后者的实际行为反馈给前者。",
+        "evidence": [
+          {
+            "block_id": "b00014",
+            "quote": "We consider two independently parameterized agents: a Synthesizer \\pi_{S}(\\cdot;\\theta_{S}) that generates training tasks and a Reasoner \\pi_{R}(\\cdot;\\theta_{R}) that learns to solve them."
+          },
+          {
+            "block_id": "b00014",
+            "quote": "The Synthesizer determines the Reasoner’s training experience, while the Reasoner’s realized behavior provides feedback for improving synthesis."
+          }
+        ]
+      },
+      "coordination": {
+        "id": "c019",
+        "text": "同一在线交互批次提供两类奖励：轨迹级正确性优化Reasoner，任务级交互反馈优化Synthesizer；两者参数独立。",
+        "evidence": [
+          {
+            "block_id": "b00080",
+            "quote": "the same online interaction batch produces rollout-level correctness rewards for the Reasoner and task-level, interaction-grounded rewards for the Synthesizer, after which both independently parameterized policies are updated within a unified multi-agent training process."
+          }
+        ]
+      },
+      "communication": {
+        "id": "c020",
+        "text": "Reasoner仅接收题目；任务池统计、近期能力诊断和拒绝反馈进入合成器下一轮上下文。",
+        "evidence": [
+          {
+            "block_id": "b00119",
+            "quote": "At each synthesis iteration, the placeholders in the Synthesizer user prompt are populated using the current synthetic-pool statistics, the Reasoner’s recent capability diagnostics, and feedback from rejected tasks."
+          },
+          {
+            "block_id": "b00119",
+            "quote": "The Reasoner receives only the generated problem statement; all pedagogical metadata, reference solutions, and verification information are reserved for task validation and reward computation."
+          }
+        ]
+      },
+      "shared_memory": {
+        "id": "c021",
+        "text": "系统维护交互记忆，保存近期任务、验证结果、解题轨迹和成功率、合成奖励及拒绝记录，并重建合成上下文；两个智能体是否均直接读写该存储未明确。",
+        "evidence": [
+          {
+            "block_id": "b00023",
+            "quote": "Let \\mathcal{M}_{t} denote the interaction memory before iteration t , containing recent tasks, validation outcomes, Reasoner rollouts and success rates, synthesis rewards, and rejection records."
+          },
+          {
+            "block_id": "b00045",
+            "quote": "To sustain self-evolution, each interaction batch is fed back into a persistent memory that reconstructs the learner state and conditions the next synthesis round."
+          }
+        ]
+      },
+      "scheduling": {
+        "id": "c022",
+        "text": "每轮生成32个任务，对获准任务各采样4条Reasoner轨迹；两个策略在同一训练迭代内更新，未据此推断硬件并行执行。",
+        "evidence": [
+          {
+            "block_id": "b00118",
+            "quote": "Each training iteration contains 32 synthesized tasks, and the Reasoner samples K=4 independent trajectories for every admitted task."
+          },
+          {
+            "block_id": "b00042",
+            "quote": "Although their parameters and rewards remain separate, both policies are updated within the same training iteration:"
+          }
+        ]
+      },
+      "equal_budget_single_agent_comparison": null
+    },
+    "self_evolution": {
+      "changed_object": {
+        "id": "c023",
+        "text": "迭代更新解题策略、合成策略及生成上下文，进而改变后续训练分布。",
+        "evidence": [
+          {
+            "block_id": "b00045",
+            "quote": "The co-training procedure in Section 3.3 updates both the Reasoner and the policy that generates its training experience."
+          },
+          {
+            "block_id": "b00051",
+            "quote": "Compared with \\widetilde{\\mathcal{D}}_{t} , this distribution changes through both a renewed context and an updated synthesis policy."
+          }
+        ]
+      },
+      "feedback": {
+        "id": "c024",
+        "text": "Reasoner获得正确性反馈；Synthesizer获得质量、可靠性及基于实际轨迹结果的可教性反馈。新颖性与诊断对齐仅用于分析，不直接进入主实验门控奖励。",
+        "evidence": [
+          {
+            "block_id": "b00001",
+            "quote": "Correctness feedback improves the Reasoner, while task quality, answer reliability, and outcome-grounded teachability guide the Synthesizer."
+          },
+          {
+            "block_id": "b00112",
+            "quote": "Novelty and diagnostic-alignment signals are logged for analysis but do not directly contribute to the gated Synthesizer reward used in the main experiments."
+          }
+        ]
+      },
+      "update_method": {
+        "id": "c025",
+        "text": "通过UnityMAS-O对两个智能体分别执行GRPO，同一在线批次提供各自更新信号。",
+        "evidence": [
+          {
+            "block_id": "b00118",
+            "quote": "Both agents are optimized using GRPO through the UnityMAS-O [ Chen et al., 2026c ] training framework, with vLLM serving as the rollout backend."
+          },
+          {
+            "block_id": "b00021",
+            "quote": "Both policies are updated from the same online batch using agent-specific group-relative policy optimization, forming a unified co-training process rather than sequential synthesis and learning."
+          }
+        ]
+      },
+      "stage": {
+        "id": "c026",
+        "text": "自进化发生在在线训练阶段，通过生成任务、联合更新和重建课程形成闭环。",
+        "evidence": [
+          {
+            "block_id": "b00013",
+            "quote": "(2) The resulting interaction batch is then used to jointly update the Synthesizer and the Reasoner through online multi-agent co-training. (3) The updated agents in turn reshape the future curriculum and task distribution, forming an agent–data self-evolution loop."
+          }
+        ]
+      },
+      "retention": {
+        "id": "c027",
+        "text": "训练期间跨任务、跨迭代保留交互信息及拒绝原因，以近期窗口重建状态；训练结束后的持续性未交代。",
+        "evidence": [
+          {
+            "block_id": "b00045",
+            "quote": "To sustain self-evolution, each interaction batch is fed back into a persistent memory that reconstructs the learner state and conditions the next synthesis round."
+          },
+          {
+            "block_id": "b00046",
+            "quote": "Rejected tasks and their failure reasons are also retained to discourage repeated malformed, unreliable, or redundant generations."
+          },
+          {
+            "block_id": "b00048",
+            "quote": "The recent interaction window emphasizes the Reasoner’s current behavior while retaining sufficient history to summarize task coverage, recurring weaknesses, and synthesis failures."
+          }
+        ]
+      },
+      "held_out_validation": {
+        "id": "c028",
+        "text": "使用标准测试划分和统一答案提取、验证流程；收益归因使用固定终点检查点，避免按基准挑选检查点。",
+        "evidence": [
+          {
+            "block_id": "b00113",
+            "quote": "We use the standard test splits and report answer accuracy under the same answer-extraction and verification pipeline for all methods."
+          },
+          {
+            "block_id": "b00130",
+            "quote": "Both methods are evaluated at fixed terminal checkpoints, avoiding benchmark-specific checkpoint selection."
+          }
+        ]
+      }
+    },
+    "system_insights": [
+      "系统分析：Frozen对照支持更新合成策略的收益，但其明确匹配的是Reasoner优化预算和每题rollout配置，不能直接证明双智能体优于总计算预算相等的单智能体（b00067、b00118）。",
+      "系统分析：可教性与有效梯度指标共享实际轨迹结果，高相关不能独立证明最终学习收益；离线重排序也不能替代重新训练的奖励消融（b00145、b00062）。",
+      "系统分析：四基准归因中的56是两个方法解出总数之差，45是初始错误子集上的净差；这些汇总计数不能识别恰好56道仅SynCo解出的题（b00130、b00131）。"
+    ],
+    "open_questions": [
+      "系统分析：更长训练或动态调整每题轨迹数，能否缓解有效梯度任务比例下降，同时维持固定总计算预算？问题依据为b00126。",
+      "系统分析：在相同总GPU时间或总token预算下，双策略训练能否超过仅优化Reasoner的方案？当前预算控制边界见b00067、b00118。",
+      "系统分析：验证器与独立解共识检查的错误在联合优化中会被抑制还是放大？所给材料描述了检查机制，但未给出误判评估（b00103、b00108）。"
+    ],
+    "missing_information": [
+      "所给原文块未展示验证器完整规则、精确组合系数和阈值、独立共识检查采样配置及误判评估；b00108将精确系数和阈值指向补充实现。",
+      "所给原文块未明确GPU型号、随机种子、重复实验次数、置信区间或显著性检验；4B专属硬件条件及效率实验明确对应的骨干型号未找到。",
+      "所给原文块未展示完整提示模板、能力诊断算法、记忆窗口大小和存储更新实现，也未明确两个智能体是否均直接读写记忆。",
+      "未在所给原文块中找到总计算预算匹配的单智能体比较；不能将冻结合成器对照直接等同于该比较。",
+      "未在所给原文块中找到超过所报告100步过程的长期自进化、训练结束后持续适应或跨领域迁移结果。",
+      "b00129的难度组计数为630、1,926、363，系统核算合计2,919，比同表全池2,940少21；所给原文块未解释差额。",
+      "未提供前作原文，无法独立确认前作结论、首次提出或创新优先权；本次仅核验提供文本，未复现实验。"
+    ],
+    "reading_priority": "high",
+    "priority_reason": "系统判断：同批双策略更新、冻结合成器对照及课程优化价值下降的诊断，直接关联多智能体自进化的机制与边界，值得重点阅读（b00021、b00055、b00126）。",
+    "reproduction_status": "not_reproduced"
+  },
+  "evidence": [
+    {
+      "claim_id": "c001",
+      "block_id": "b00002",
+      "quote": "Tasks that were once informative may become trivial, whereas tasks far beyond the agent’s competence continue to provide little useful learning signal.",
+      "section": "1 Introduction",
+      "page": null,
+      "link": "https://arxiv.org/html/2610.11345v1#S1.p1.1"
+    },
+    {
+      "claim_id": "c001",
+      "block_id": "b00021",
+      "quote": "Both policies are updated from the same online batch using agent-specific group-relative policy optimization, forming a unified co-training process rather than sequential synthesis and learning.",
+      "section": "3.1 Problem Formulation: Agentic Data Synthesis Co-Training",
+      "page": null,
+      "link": "https://arxiv.org/html/2610.11345v1#S3.SS1.p4.2"
+    },
+    {
+      "claim_id": "c001",
+      "block_id": "b00052",
+      "quote": "Reasoning accuracy (%) across eight mathematical reasoning benchmarks. Vanilla denotes the initial Qwen3-8B model.",
+      "section": "Coupled evolution of agents and data.",
+      "page": null,
+      "link": "https://arxiv.org/html/2610.11345v1#S3.T1"
+    },
+    {
+      "claim_id": "c001",
+      "block_id": "b00055",
+      "quote": "The frozen-Synthesizer baseline improves further to 75.85%, whereas SynCo reaches 78.72%, outperforming the strongest external baseline by 3.76 percentage points, Frozen by 2.87 points, and Vanilla by 6.36 points.",
+      "section": "4.1 RQ1: Does Co-Training Data Synthesis Improve Reasoning Performance?",
+      "page": null,
+      "link": "https://arxiv.org/html/2610.11345v1#S4.SS1.p1.1"
+    },
+    {
+      "claim_id": "c002",
+      "block_id": "b00002",
+      "quote": "Tasks that were once informative may become trivial, whereas tasks far beyond the agent’s competence continue to provide little useful learning signal.",
+      "section": "1 Introduction",
+      "page": null,
+      "link": "https://arxiv.org/html/2610.11345v1#S1.p1.1"
+    },
+    {
+      "claim_id": "c002",
+      "block_id": "b00003",
+      "quote": "Many existing frameworks still alternate between generating tasks from a previous learner checkpoint and subsequently training the learner on the resulting data",
+      "section": "1 Introduction",
+      "page": null,
+      "link": "https://arxiv.org/html/2610.11345v1#S1.p2.1"
+    },
+    {
+      "claim_id": "c002",
+      "block_id": "b00003",
+      "quote": "Although this enables iterative adaptation, the synthesis policy and the task policy are not optimized together from the same online interaction.",
+      "section": "1 Introduction",
+      "page": null,
+      "link": "https://arxiv.org/html/2610.11345v1#S1.p2.1"
+    },
+    {
+      "claim_id": "c003",
+      "block_id": "b00057",
+      "quote": "These results distinguish task validity and diversity from realized optimization utility: well-formed and novel tasks may still provide no effective policy gradient for the current Reasoner.",
+      "section": "4.2 RQ2: How Does the Synthesized Curriculum Evolve During Co-Training?",
+      "page": null,
+      "link": "https://arxiv.org/html/2610.11345v1#S4.SS2.p1.1"
+    },
+    {
+      "claim_id": "c003",
+      "block_id": "b00143",
+      "quote": "This distinction is important under group-relative optimization: a task can become substantially harder while remaining equally uninformative if all sampled trajectories still receive the same outcome.",
+      "section": "D.5 Why Ex-Ante Difficulty Does Not Predict Gradient Utility",
+      "page": null,
+      "link": "https://arxiv.org/html/2610.11345v1#A4.SS5.p2.1"
+    },
+    {
+      "claim_id": "c004",
+      "block_id": "b00119",
+      "quote": "At each synthesis iteration, the placeholders in the Synthesizer user prompt are populated using the current synthetic-pool statistics, the Reasoner’s recent capability diagnostics, and feedback from rejected tasks.",
+      "section": "C.4 Agent Prompt Templates",
+      "page": null,
+      "link": "https://arxiv.org/html/2610.11345v1#A3.SS4.p1.1"
+    },
+    {
+      "claim_id": "c004",
+      "block_id": "b00103",
+      "quote": "The verifier checks schema completeness, problem well-posedness, answer consistency, output validity, and redundancy with recently generated tasks. We additionally apply an independent consensus check to filter tasks whose reference answers are insufficiently supported by independent solutions.",
+      "section": "B.2 Reward and Verification Details",
+      "page": null,
+      "link": "https://arxiv.org/html/2610.11345v1#A2.SS2.p1.1"
+    },
+    {
+      "claim_id": "c004",
+      "block_id": "b00119",
+      "quote": "The Reasoner receives only the generated problem statement; all pedagogical metadata, reference solutions, and verification information are reserved for task validation and reward computation.",
+      "section": "C.4 Agent Prompt Templates",
+      "page": null,
+      "link": "https://arxiv.org/html/2610.11345v1#A3.SS4.p1.1"
+    },
+    {
+      "claim_id": "c005",
+      "block_id": "b00118",
+      "quote": "Each training iteration contains 32 synthesized tasks, and the Reasoner samples K=4 independent trajectories for every admitted task.",
+      "section": "C.3 Implementation Details",
+      "page": null,
+      "link": "https://arxiv.org/html/2610.11345v1#A3.SS3.p1.1"
+    },
+    {
+      "claim_id": "c005",
+      "block_id": "b00104",
+      "quote": "For the Reasoner, each rollout receives a correctness-based reward: 1.0 for a correct answer in the prescribed format, 0.9 for a correct answer recovered without that format, and 0 otherwise.",
+      "section": "B.2 Reward and Verification Details",
+      "page": null,
+      "link": "https://arxiv.org/html/2610.11345v1#A2.SS2.p2.1"
+    },
+    {
+      "claim_id": "c005",
+      "block_id": "b00105",
+      "quote": "r_{S,t}^{\\mathrm{imm}}=G_{q}\\!\\left(r_{t}^{\\mathrm{quality}}\\right)G_{r}\\!\\left(r_{t}^{\\mathrm{reliability}}\\right)T(\\mu_{t}), (23)",
+      "section": "B.2 Reward and Verification Details",
+      "page": null,
+      "link": "https://arxiv.org/html/2610.11345v1#A2.E23"
+    },
+    {
+      "claim_id": "c005",
+      "block_id": "b00107",
+      "quote": "G(v)=\\operatorname{clip}\\left(\\frac{v-0.5}{0.5},0,1\\right). (24)",
+      "section": "B.2 Reward and Verification Details",
+      "page": null,
+      "link": "https://arxiv.org/html/2610.11345v1#A2.E24"
+    },
+    {
+      "claim_id": "c005",
+      "block_id": "b00110",
+      "quote": "T(\\mu_{t})=\\begin{cases}2\\mu_{t},&\\mu_{t}\\leq 0.5,\\\\ 2(1-\\mu_{t}),&\\mu_{t}>0.5.\\end{cases} (25)",
+      "section": "B.2 Reward and Verification Details",
+      "page": null,
+      "link": "https://arxiv.org/html/2610.11345v1#A2.E25"
+    },
+    {
+      "claim_id": "c005",
+      "block_id": "b00112",
+      "quote": "Tasks rejected by the verifier receive an immediate Synthesizer reward of -0.5 and are excluded from Reasoner training. The training framework additionally applies a constant 0.1 bonus to non-empty model outputs.",
+      "section": "B.2 Reward and Verification Details",
+      "page": null,
+      "link": "https://arxiv.org/html/2610.11345v1#A2.SS2.p4.1"
+    },
+    {
+      "claim_id": "c006",
+      "block_id": "b00021",
+      "quote": "Both policies are updated from the same online batch using agent-specific group-relative policy optimization, forming a unified co-training process rather than sequential synthesis and learning.",
+      "section": "3.1 Problem Formulation: Agentic Data Synthesis Co-Training",
+      "page": null,
+      "link": "https://arxiv.org/html/2610.11345v1#S3.SS1.p4.2"
+    },
+    {
+      "claim_id": "c006",
+      "block_id": "b00045",
+      "quote": "To sustain self-evolution, each interaction batch is fed back into a persistent memory that reconstructs the learner state and conditions the next synthesis round.",
+      "section": "3.4 Closed-Loop Agent–Data Self-Evolution",
+      "page": null,
+      "link": "https://arxiv.org/html/2610.11345v1#S3.SS4.p1.1"
+    },
+    {
+      "claim_id": "c006",
+      "block_id": "b00046",
+      "quote": "Rejected tasks and their failure reasons are also retained to discourage repeated malformed, unreliable, or redundant generations.",
+      "section": "Feedback-driven context renewal.",
+      "page": null,
+      "link": "https://arxiv.org/html/2610.11345v1#S3.SS4.SSS0.Px1.p1.2"
+    },
+    {
+      "claim_id": "c006",
+      "block_id": "b00051",
+      "quote": "Compared with \\widetilde{\\mathcal{D}}_{t} , this distribution changes through both a renewed context and an updated synthesis policy.",
+      "section": "Coupled evolution of agents and data.",
+      "page": null,
+      "link": "https://arxiv.org/html/2610.11345v1#S3.SS4.SSS0.Px2.p1.2"
+    },
+    {
+      "claim_id": "c007",
+      "block_id": "b00007",
+      "quote": "We formulate agentic data synthesis and task learning as a coupled multi-agent reinforcement learning problem, and propose SynCo to jointly optimize a Synthesizer and a Reasoner within a unified online training process.",
+      "section": "1 Introduction",
+      "page": null,
+      "link": "https://arxiv.org/html/2610.11345v1#S1.I1.i1.p1.1"
+    },
+    {
+      "claim_id": "c008",
+      "block_id": "b00080",
+      "quote": "Beyond final performance, we explicitly analyze whether synthesized tasks are gradient-bearing, thereby distinguishing coarse difficulty and static data quality from the realized optimization utility observed under the current Reasoner.",
+      "section": "A.2 Self-Evolving LLMs and Agent–Data Co-Training",
+      "page": null,
+      "link": "https://arxiv.org/html/2610.11345v1#A1.SS2.p3.1"
+    },
+    {
+      "claim_id": "c009",
+      "block_id": "b00052",
+      "quote": "Reasoning accuracy (%) across eight mathematical reasoning benchmarks. Vanilla denotes the initial Qwen3-8B model.",
+      "section": "Coupled evolution of agents and data.",
+      "page": null,
+      "link": "https://arxiv.org/html/2610.11345v1#S3.T1"
+    },
+    {
+      "claim_id": "c009",
+      "block_id": "b00055",
+      "quote": "among them, ScaleQuest-Math is the strongest with 74.96%, while the controlled Static-Pool GRPO, Reject-Sample SFT, and Offline-Augment GRPO baselines reach 71.75%, 72.23%, and 73.13%, respectively.",
+      "section": "4.1 RQ1: Does Co-Training Data Synthesis Improve Reasoning Performance?",
+      "page": null,
+      "link": "https://arxiv.org/html/2610.11345v1#S4.SS1.p1.1"
+    },
+    {
+      "claim_id": "c009",
+      "block_id": "b00055",
+      "quote": "The frozen-Synthesizer baseline improves further to 75.85%, whereas SynCo reaches 78.72%, outperforming the strongest external baseline by 3.76 percentage points, Frozen by 2.87 points, and Vanilla by 6.36 points.",
+      "section": "4.1 RQ1: Does Co-Training Data Synthesis Improve Reasoning Performance?",
+      "page": null,
+      "link": "https://arxiv.org/html/2610.11345v1#S4.SS1.p1.1"
+    },
+    {
+      "claim_id": "c010",
+      "block_id": "b00131",
+      "quote": "Figure 7 shows that this pattern holds consistently across all four benchmarks. On GSM-Hard, the Learn subset contributes +21 of the +27 net gain, compared with +6 from Retain. Similarly, Learn contributes +9 of +11 on MATH-500, +11 of +13 on GSM8K, and +4 of +5 on SVAMP.",
+      "section": "D.3 Attributing Gains to Capability Acquisition",
+      "page": null,
+      "link": "https://arxiv.org/html/2610.11345v1#A4.SS3.p2.1"
+    },
+    {
+      "claim_id": "c010",
+      "block_id": "b00130",
+      "quote": "Both methods are evaluated at fixed terminal checkpoints, avoiding benchmark-specific checkpoint selection.",
+      "section": "D.3 Attributing Gains to Capability Acquisition",
+      "page": null,
+      "link": "https://arxiv.org/html/2610.11345v1#A4.SS3.p1.1"
+    },
+    {
+      "claim_id": "c010",
+      "block_id": "b00130",
+      "quote": "On the 2,560 initially correct examples, the two variants remain close: SynCo retains 2,533 examples (98.95%), compared with 2,522 (98.52%) for the frozen variant, yielding 11 additional retained solutions.",
+      "section": "D.3 Attributing Gains to Capability Acquisition",
+      "page": null,
+      "link": "https://arxiv.org/html/2610.11345v1#A4.SS3.p1.1"
+    },
+    {
+      "claim_id": "c010",
+      "block_id": "b00130",
+      "quote": "The difference is substantially larger on the 878 initially incorrect examples, where SynCo solves 283 (32.23%) compared with 238 (27.11%) for Frozen. Thus, the Learn subset contributes 45 of the 56 additional solved examples, accounting for 80.4% of the overall advantage.",
+      "section": "D.3 Attributing Gains to Capability Acquisition",
+      "page": null,
+      "link": "https://arxiv.org/html/2610.11345v1#A4.SS3.p1.1"
+    },
+    {
+      "claim_id": "c011",
+      "block_id": "b00061",
+      "quote": "Tasks are reranked offline using different signals, and the proportion of gradient-bearing tasks in the top-ranked quartile is reported.",
+      "section": "4.4 RQ4: Which Synthesis Signals Align with Gradient-Bearing Tasks?",
+      "page": null,
+      "link": "https://arxiv.org/html/2610.11345v1#S4.F3"
+    },
+    {
+      "claim_id": "c011",
+      "block_id": "b00062",
+      "quote": "Relative to the 16.2% gradient-bearing prevalence in the full task pool, ranking by the SynCo gated reward increases this proportion to 62.3%, while teachability alone reaches 64.6%. In contrast, quality and novelty alone yield only 12.8% and 12.0%, respectively, both below the pool prevalence.",
+      "section": "4.4 RQ4: Which Synthesis Signals Align with Gradient-Bearing Tasks?",
+      "page": null,
+      "link": "https://arxiv.org/html/2610.11345v1#S4.SS4.p1.1"
+    },
+    {
+      "claim_id": "c011",
+      "block_id": "b00062",
+      "quote": "Because this analysis reranks an already collected task pool, it should be interpreted as a diagnostic analysis rather than a causal training ablation;",
+      "section": "4.4 RQ4: Which Synthesis Signals Align with Gradient-Bearing Tasks?",
+      "page": null,
+      "link": "https://arxiv.org/html/2610.11345v1#S4.SS4.p1.1"
+    },
+    {
+      "claim_id": "c012",
+      "block_id": "b00054",
+      "quote": "We evaluate mathematical reasoning on eight benchmarks: GSM8K, SVAMP, ASDiv, GSM-Hard, MATH-500, AIME24, AIME25, and Minerva, reporting answer accuracy under a unified verification protocol.",
+      "section": "4 Experiments",
+      "page": null,
+      "link": "https://arxiv.org/html/2610.11345v1#S4.p1.1"
+    },
+    {
+      "claim_id": "c012",
+      "block_id": "b00052",
+      "quote": "Avg. is the unweighted average across all benchmarks.",
+      "section": "Coupled evolution of agents and data.",
+      "page": null,
+      "link": "https://arxiv.org/html/2610.11345v1#S3.T1"
+    },
+    {
+      "claim_id": "c012",
+      "block_id": "b00055",
+      "quote": "The frozen-Synthesizer baseline improves further to 75.85%, whereas SynCo reaches 78.72%, outperforming the strongest external baseline by 3.76 percentage points, Frozen by 2.87 points, and Vanilla by 6.36 points.",
+      "section": "4.1 RQ1: Does Co-Training Data Synthesis Improve Reasoning Performance?",
+      "page": null,
+      "link": "https://arxiv.org/html/2610.11345v1#S4.SS1.p1.1"
+    },
+    {
+      "claim_id": "c012",
+      "block_id": "b00055",
+      "quote": "among them, ScaleQuest-Math is the strongest with 74.96%",
+      "section": "4.1 RQ1: Does Co-Training Data Synthesis Improve Reasoning Performance?",
+      "page": null,
+      "link": "https://arxiv.org/html/2610.11345v1#S4.SS1.p1.1"
+    },
+    {
+      "claim_id": "c012",
+      "block_id": "b00118",
+      "quote": "We initialize the Synthesizer and the Reasoner as two independently parameterized copies of Qwen3-8B, and additionally repeat the main comparison with Qwen3-4B.",
+      "section": "C.3 Implementation Details",
+      "page": null,
+      "link": "https://arxiv.org/html/2610.11345v1#A3.SS3.p1.1"
+    },
+    {
+      "claim_id": "c012",
+      "block_id": "b00118",
+      "quote": "Each training iteration contains 32 synthesized tasks, and the Reasoner samples K=4 independent trajectories for every admitted task.",
+      "section": "C.3 Implementation Details",
+      "page": null,
+      "link": "https://arxiv.org/html/2610.11345v1#A3.SS3.p1.1"
+    },
+    {
+      "claim_id": "c012",
+      "block_id": "b00118",
+      "quote": "The Qwen3-8B experiments are distributed across two 8-GPU worker groups, one for each agent.",
+      "section": "C.3 Implementation Details",
+      "page": null,
+      "link": "https://arxiv.org/html/2610.11345v1#A3.SS3.p1.1"
+    },
+    {
+      "claim_id": "c012",
+      "block_id": "b00116",
+      "quote": "For these baselines, we directly use the authors’ publicly released checkpoints without additional training or adaptation, and evaluate them using exactly the same mathematical evaluation protocol as SynCo.",
+      "section": "C.2 Baselines",
+      "page": null,
+      "link": "https://arxiv.org/html/2610.11345v1#A3.SS2.p3.1"
+    },
+    {
+      "claim_id": "c012",
+      "block_id": "b00117",
+      "quote": "For each corpus, we sample exactly 2,940 unique synthetic problems, matching the number of verified training tasks used by SynCo, and train the same Qwen3 learner using the same GRPO implementation, rollout configuration, optimizer settings, and total optimization budget as our controlled static-data baseline.",
+      "section": "C.2 Baselines",
+      "page": null,
+      "link": "https://arxiv.org/html/2610.11345v1#A3.SS2.p4.1"
+    },
+    {
+      "claim_id": "c013",
+      "block_id": "b00123",
+      "quote": "Reasoning accuracy (%) across eight mathematical reasoning benchmarks using Qwen3-4B.",
+      "section": "D.1 Generalization Across Model Scales",
+      "page": null,
+      "link": "https://arxiv.org/html/2610.11345v1#A4.T4"
+    },
+    {
+      "claim_id": "c013",
+      "block_id": "b00123",
+      "quote": "Avg. is the unweighted average across all benchmarks.",
+      "section": "D.1 Generalization Across Model Scales",
+      "page": null,
+      "link": "https://arxiv.org/html/2610.11345v1#A4.T4"
+    },
+    {
+      "claim_id": "c013",
+      "block_id": "b00122",
+      "quote": "conditioning a frozen Synthesizer on the evolving Reasoner raises the average accuracy from 70.14% to 73.72%, while jointly optimizing the Synthesizer further improves it to 75.20%.",
+      "section": "D.1 Generalization Across Model Scales",
+      "page": null,
+      "link": "https://arxiv.org/html/2610.11345v1#A4.SS1.p1.1"
+    },
+    {
+      "claim_id": "c013",
+      "block_id": "b00122",
+      "quote": "SynCo improves over its frozen counterpart on seven of eight benchmarks",
+      "section": "D.1 Generalization Across Model Scales",
+      "page": null,
+      "link": "https://arxiv.org/html/2610.11345v1#A4.SS1.p1.1"
+    },
+    {
+      "claim_id": "c013",
+      "block_id": "b00122",
+      "quote": "While EnvScaler attains stronger results on AIME24 and AIME25, SynCo performs more consistently across the broader benchmark suite",
+      "section": "D.1 Generalization Across Model Scales",
+      "page": null,
+      "link": "https://arxiv.org/html/2610.11345v1#A4.SS1.p1.1"
+    },
+    {
+      "claim_id": "c013",
+      "block_id": "b00118",
+      "quote": "The Qwen3-4B experiments follow the same training protocol and hyperparameters except for backbone-specific inference configurations.",
+      "section": "C.3 Implementation Details",
+      "page": null,
+      "link": "https://arxiv.org/html/2610.11345v1#A3.SS3.p1.1"
+    },
+    {
+      "claim_id": "c014",
+      "block_id": "b00147",
+      "quote": "SynCo (Frozen Synth.) 100 45.8 s 45.0 s 341.6 s SynCo 100 45.1 s 44.6 s 343.5 s",
+      "section": "D.5 Why Ex-Ante Difficulty Does Not Predict Gradient Utility",
+      "page": null,
+      "link": "https://arxiv.org/html/2610.11345v1#A4.T8.7"
+    },
+    {
+      "claim_id": "c014",
+      "block_id": "b00067",
+      "quote": "Because both variants share the same Reasoner optimization budget and per-task rollout configuration, the comparison isolates the effect of adapting the synthesis policy itself.",
+      "section": "4.6 RQ6: How Efficient Is Online Synthesizer–Reasoner Co-Training?",
+      "page": null,
+      "link": "https://arxiv.org/html/2610.11345v1#S4.SS6.p1.1"
+    },
+    {
+      "claim_id": "c014",
+      "block_id": "b00150",
+      "quote": "Productive-task statistics are computed over steps 13–70, the interval with valid logging for both variants.",
+      "section": "D.5 Why Ex-Ante Difficulty Does Not Predict Gradient Utility",
+      "page": null,
+      "link": "https://arxiv.org/html/2610.11345v1#A4.T8.10"
+    },
+    {
+      "claim_id": "c014",
+      "block_id": "b00152",
+      "quote": "The productive-task rate increases from 13.7% under Frozen to 14.5% with SynCo , corresponding to 4.38 versus 4.64 productive tasks per batch of 32.",
+      "section": "D.6 Training Efficiency, Gradient Utilization, and Data Production",
+      "page": null,
+      "link": "https://arxiv.org/html/2610.11345v1#A4.SS6.p2.1"
+    },
+    {
+      "claim_id": "c014",
+      "block_id": "b00151",
+      "quote": "Because the runs were executed independently, these small wall-clock differences should be interpreted as comparable computational profiles rather than evidence that either variant is intrinsically faster.",
+      "section": "D.6 Training Efficiency, Gradient Utilization, and Data Production",
+      "page": null,
+      "link": "https://arxiv.org/html/2610.11345v1#A4.SS6.p1.1"
+    },
+    {
+      "claim_id": "c014",
+      "block_id": "b00153",
+      "quote": "Across 100 training steps, SynCo generates 3,200 task candidates, of which 2,940 pass verification, yielding a 91.9% acceptance rate.",
+      "section": "D.6 Training Efficiency, Gradient Utilization, and Data Production",
+      "page": null,
+      "link": "https://arxiv.org/html/2610.11345v1#A4.SS6.p3.1"
+    },
+    {
+      "claim_id": "c015",
+      "block_id": "b00126",
+      "quote": "Gradient-bearing tasks decrease from 31.3% in the earliest bucket to 9.5% in the final bucket, while the all-correct proportion rises from 34.4% to 59.9%.",
+      "section": "D.2 How Does the Synthesized Curriculum Evolve During Co-Training?",
+      "page": null,
+      "link": "https://arxiv.org/html/2610.11345v1#A4.SS2.p2.1"
+    },
+    {
+      "claim_id": "c015",
+      "block_id": "b00126",
+      "quote": "Meanwhile, task quality remains high and novelty increases, showing that a curriculum can remain valid and diverse while progressively losing optimization value.",
+      "section": "D.2 How Does the Synthesized Curriculum Evolve During Co-Training?",
+      "page": null,
+      "link": "https://arxiv.org/html/2610.11345v1#A4.SS2.p2.1"
+    },
+    {
+      "claim_id": "c016",
+      "block_id": "b00125",
+      "quote": "Table 5 provides a detailed decomposition of the 2,940 verified tasks collected during co-training.",
+      "section": "D.2 How Does the Synthesized Curriculum Evolve During Co-Training?",
+      "page": null,
+      "link": "https://arxiv.org/html/2610.11345v1#A4.SS2.p1.1"
+    },
+    {
+      "claim_id": "c016",
+      "block_id": "b00125",
+      "quote": "Only 475 tasks (16.2%) satisfy this condition, compared with 994 (33.8%) that are uniformly incorrect and 1,471 (50.0%) that are uniformly correct.",
+      "section": "D.2 How Does the Synthesized Curriculum Evolve During Co-Training?",
+      "page": null,
+      "link": "https://arxiv.org/html/2610.11345v1#A4.SS2.p1.1"
+    },
+    {
+      "claim_id": "c016",
+      "block_id": "b00144",
+      "quote": "Treating the Synthesizer’s learnable label as a binary predictor of gradient-bearing tasks yields a correlation of only 0.009 , with 16.8% precision and 22.3% recall.",
+      "section": "D.5 Why Ex-Ante Difficulty Does Not Predict Gradient Utility",
+      "page": null,
+      "link": "https://arxiv.org/html/2610.11345v1#A4.SS5.p3.1"
+    },
+    {
+      "claim_id": "c016",
+      "block_id": "b00145",
+      "quote": "By contrast, outcome-grounded teachability is computed after observing the Reasoner’s rollouts and is strongly aligned with the gradient-bearing indicator ( r=0.934 ) by construction.",
+      "section": "D.5 Why Ex-Ante Difficulty Does Not Predict Gradient Utility",
+      "page": null,
+      "link": "https://arxiv.org/html/2610.11345v1#A4.SS5.p4.1"
+    },
+    {
+      "claim_id": "c017",
+      "block_id": "b00056",
+      "quote": "Generation order approximates training progression because exact iteration indices were not recorded.",
+      "section": "4.2 RQ2: How Does the Synthesized Curriculum Evolve During Co-Training?",
+      "page": null,
+      "link": "https://arxiv.org/html/2610.11345v1#S4.F2"
+    },
+    {
+      "claim_id": "c017",
+      "block_id": "b00151",
+      "quote": "Because the runs were executed independently, these small wall-clock differences should be interpreted as comparable computational profiles rather than evidence that either variant is intrinsically faster.",
+      "section": "D.6 Training Efficiency, Gradient Utilization, and Data Production",
+      "page": null,
+      "link": "https://arxiv.org/html/2610.11345v1#A4.SS6.p1.1"
+    },
+    {
+      "claim_id": "c018",
+      "block_id": "b00014",
+      "quote": "We consider two independently parameterized agents: a Synthesizer \\pi_{S}(\\cdot;\\theta_{S}) that generates training tasks and a Reasoner \\pi_{R}(\\cdot;\\theta_{R}) that learns to solve them.",
+      "section": "3.1 Problem Formulation: Agentic Data Synthesis Co-Training",
+      "page": null,
+      "link": "https://arxiv.org/html/2610.11345v1#S3.SS1.p1.1"
+    },
+    {
+      "claim_id": "c018",
+      "block_id": "b00014",
+      "quote": "The Synthesizer determines the Reasoner’s training experience, while the Reasoner’s realized behavior provides feedback for improving synthesis.",
+      "section": "3.1 Problem Formulation: Agentic Data Synthesis Co-Training",
+      "page": null,
+      "link": "https://arxiv.org/html/2610.11345v1#S3.SS1.p1.1"
+    },
+    {
+      "claim_id": "c019",
+      "block_id": "b00080",
+      "quote": "the same online interaction batch produces rollout-level correctness rewards for the Reasoner and task-level, interaction-grounded rewards for the Synthesizer, after which both independently parameterized policies are updated within a unified multi-agent training process.",
+      "section": "A.2 Self-Evolving LLMs and Agent–Data Co-Training",
+      "page": null,
+      "link": "https://arxiv.org/html/2610.11345v1#A1.SS2.p3.1"
+    },
+    {
+      "claim_id": "c020",
+      "block_id": "b00119",
+      "quote": "At each synthesis iteration, the placeholders in the Synthesizer user prompt are populated using the current synthetic-pool statistics, the Reasoner’s recent capability diagnostics, and feedback from rejected tasks.",
+      "section": "C.4 Agent Prompt Templates",
+      "page": null,
+      "link": "https://arxiv.org/html/2610.11345v1#A3.SS4.p1.1"
+    },
+    {
+      "claim_id": "c020",
+      "block_id": "b00119",
+      "quote": "The Reasoner receives only the generated problem statement; all pedagogical metadata, reference solutions, and verification information are reserved for task validation and reward computation.",
+      "section": "C.4 Agent Prompt Templates",
+      "page": null,
+      "link": "https://arxiv.org/html/2610.11345v1#A3.SS4.p1.1"
+    },
+    {
+      "claim_id": "c021",
+      "block_id": "b00023",
+      "quote": "Let \\mathcal{M}_{t} denote the interaction memory before iteration t , containing recent tasks, validation outcomes, Reasoner rollouts and success rates, synthesis rewards, and rejection records.",
+      "section": "Capability-conditioned synthesis context.",
+      "page": null,
+      "link": "https://arxiv.org/html/2610.11345v1#S3.SS2.SSS0.Px1.p1.1"
+    },
+    {
+      "claim_id": "c021",
+      "block_id": "b00045",
+      "quote": "To sustain self-evolution, each interaction batch is fed back into a persistent memory that reconstructs the learner state and conditions the next synthesis round.",
+      "section": "3.4 Closed-Loop Agent–Data Self-Evolution",
+      "page": null,
+      "link": "https://arxiv.org/html/2610.11345v1#S3.SS4.p1.1"
+    },
+    {
+      "claim_id": "c022",
+      "block_id": "b00118",
+      "quote": "Each training iteration contains 32 synthesized tasks, and the Reasoner samples K=4 independent trajectories for every admitted task.",
+      "section": "C.3 Implementation Details",
+      "page": null,
+      "link": "https://arxiv.org/html/2610.11345v1#A3.SS3.p1.1"
+    },
+    {
+      "claim_id": "c022",
+      "block_id": "b00042",
+      "quote": "Although their parameters and rewards remain separate, both policies are updated within the same training iteration:",
+      "section": "Joint multi-agent update.",
+      "page": null,
+      "link": "https://arxiv.org/html/2610.11345v1#S3.SS3.SSS0.Px3.p1.2"
+    },
+    {
+      "claim_id": "c023",
+      "block_id": "b00045",
+      "quote": "The co-training procedure in Section 3.3 updates both the Reasoner and the policy that generates its training experience.",
+      "section": "3.4 Closed-Loop Agent–Data Self-Evolution",
+      "page": null,
+      "link": "https://arxiv.org/html/2610.11345v1#S3.SS4.p1.1"
+    },
+    {
+      "claim_id": "c023",
+      "block_id": "b00051",
+      "quote": "Compared with \\widetilde{\\mathcal{D}}_{t} , this distribution changes through both a renewed context and an updated synthesis policy.",
+      "section": "Coupled evolution of agents and data.",
+      "page": null,
+      "link": "https://arxiv.org/html/2610.11345v1#S3.SS4.SSS0.Px2.p1.2"
+    },
+    {
+      "claim_id": "c024",
+      "block_id": "b00001",
+      "quote": "Correctness feedback improves the Reasoner, while task quality, answer reliability, and outcome-grounded teachability guide the Synthesizer.",
+      "section": "摘要",
+      "page": null,
+      "link": "https://arxiv.org/html/2610.11345v1#abstract1.1"
+    },
+    {
+      "claim_id": "c024",
+      "block_id": "b00112",
+      "quote": "Novelty and diagnostic-alignment signals are logged for analysis but do not directly contribute to the gated Synthesizer reward used in the main experiments.",
+      "section": "B.2 Reward and Verification Details",
+      "page": null,
+      "link": "https://arxiv.org/html/2610.11345v1#A2.SS2.p4.1"
+    },
+    {
+      "claim_id": "c025",
+      "block_id": "b00118",
+      "quote": "Both agents are optimized using GRPO through the UnityMAS-O [ Chen et al., 2026c ] training framework, with vLLM serving as the rollout backend.",
+      "section": "C.3 Implementation Details",
+      "page": null,
+      "link": "https://arxiv.org/html/2610.11345v1#A3.SS3.p1.1"
+    },
+    {
+      "claim_id": "c025",
+      "block_id": "b00021",
+      "quote": "Both policies are updated from the same online batch using agent-specific group-relative policy optimization, forming a unified co-training process rather than sequential synthesis and learning.",
+      "section": "3.1 Problem Formulation: Agentic Data Synthesis Co-Training",
+      "page": null,
+      "link": "https://arxiv.org/html/2610.11345v1#S3.SS1.p4.2"
+    },
+    {
+      "claim_id": "c026",
+      "block_id": "b00013",
+      "quote": "(2) The resulting interaction batch is then used to jointly update the Synthesizer and the Reasoner through online multi-agent co-training. (3) The updated agents in turn reshape the future curriculum and task distribution, forming an agent–data self-evolution loop.",
+      "section": "3 Method",
+      "page": null,
+      "link": "https://arxiv.org/html/2610.11345v1#S3.F1"
+    },
+    {
+      "claim_id": "c027",
+      "block_id": "b00045",
+      "quote": "To sustain self-evolution, each interaction batch is fed back into a persistent memory that reconstructs the learner state and conditions the next synthesis round.",
+      "section": "3.4 Closed-Loop Agent–Data Self-Evolution",
+      "page": null,
+      "link": "https://arxiv.org/html/2610.11345v1#S3.SS4.p1.1"
+    },
+    {
+      "claim_id": "c027",
+      "block_id": "b00046",
+      "quote": "Rejected tasks and their failure reasons are also retained to discourage repeated malformed, unreliable, or redundant generations.",
+      "section": "Feedback-driven context renewal.",
+      "page": null,
+      "link": "https://arxiv.org/html/2610.11345v1#S3.SS4.SSS0.Px1.p1.2"
+    },
+    {
+      "claim_id": "c027",
+      "block_id": "b00048",
+      "quote": "The recent interaction window emphasizes the Reasoner’s current behavior while retaining sufficient history to summarize task coverage, recurring weaknesses, and synthesis failures.",
+      "section": "Feedback-driven context renewal.",
+      "page": null,
+      "link": "https://arxiv.org/html/2610.11345v1#S3.SS4.SSS0.Px1.p1.3"
+    },
+    {
+      "claim_id": "c028",
+      "block_id": "b00113",
+      "quote": "We use the standard test splits and report answer accuracy under the same answer-extraction and verification pipeline for all methods.",
+      "section": "C.1 Benchmarks",
+      "page": null,
+      "link": "https://arxiv.org/html/2610.11345v1#A3.SS1.p1.1"
+    },
+    {
+      "claim_id": "c028",
+      "block_id": "b00130",
+      "quote": "Both methods are evaluated at fixed terminal checkpoints, avoiding benchmark-specific checkpoint selection.",
+      "section": "D.3 Attributing Gains to Capability Acquisition",
+      "page": null,
+      "link": "https://arxiv.org/html/2610.11345v1#A4.SS3.p1.1"
+    }
+  ],
+  "verification": {
+    "status": "verified",
+    "findings": [
+      {
+        "claim_id": "c001",
+        "verdict": "supported",
+        "reason": "b00002、b00021支持能力失配动机及同批在线联合更新；b00052、b00055支持8B八基准平均78.72%及较Frozen提高2.87个百分点，属于作者报告结果。"
+      },
+      {
+        "claim_id": "c002",
+        "verdict": "supported",
+        "reason": "b00002、b00003明确表达上述动机和对部分既有流程的描述；结论保留了作者观点归属，未视为对前作的独立核验。"
+      },
+      {
+        "claim_id": "c003",
+        "verdict": "supported",
+        "reason": "b00057与b00143明确区分任务质量、难度和实际优化效用；b00125将有效梯度任务定义为轨迹组奖励不一致，支持差异化反馈这一限定。"
+      },
+      {
+        "claim_id": "c004",
+        "verdict": "supported",
+        "reason": "b00119支持合成上下文的三类来源及Reasoner仅接收题目；b00103支持所列验证项目和独立解共识检查。"
+      },
+      {
+        "claim_id": "c005",
+        "verdict": "supported",
+        "reason": "b00118、b00104支持任务数、轨迹数和三级奖励；b00105—b00110支持门控公式，所写min形式与原分段式等价；b00112支持拒绝惩罚和非空输出奖励。"
+      },
+      {
+        "claim_id": "c006",
+        "verdict": "supported",
+        "reason": "b00021支持同批分别优化；b00045、b00046支持持续记忆及拒绝原因保留；b00051支持上下文和合成策略共同改变后续分布。"
+      },
+      {
+        "claim_id": "c007",
+        "verdict": "supported",
+        "reason": "b00007直接列出该贡献表述；结论明确限定为作者自述，没有据此确认创新优先权。"
+      },
+      {
+        "claim_id": "c008",
+        "verdict": "supported",
+        "reason": "b00080明确声称分析合成任务是否承载梯度，并区分粗粒度难度、静态质量与当前Reasoner下的实际优化效用。"
+      },
+      {
+        "claim_id": "c009",
+        "verdict": "supported",
+        "reason": "b00052界定8B八基准比较；b00053、b00055支持全部平均准确率及ScaleQuest-Math在所比较外部基线中的排名。"
+      },
+      {
+        "claim_id": "c010",
+        "verdict": "supported",
+        "reason": "b00060、b00130、b00131支持四基准范围、固定终点检查点和全部计数；283−238=45、2533−2522=11，合计56，45/56约为80.4%。"
+      },
+      {
+        "claim_id": "c011",
+        "verdict": "supported",
+        "reason": "b00061明确统计离线重排后最高四分位；b00062支持全部比例，并明确限定为诊断分析而非因果训练消融。"
+      },
+      {
+        "claim_id": "c012",
+        "verdict": "supported",
+        "reason": "b00052、b00054、b00055支持评估范围、平均口径和结果；b00118支持模型及硬件、采样配置；b00116与b00117分别支持直接评估发布检查点和受控训练合成语料，结论未混同两类预算控制。"
+      },
+      {
+        "claim_id": "c013",
+        "verdict": "supported",
+        "reason": "b00122—b00124支持4B平均收益、七项超过Frozen及EnvScaler在两项AIME上更强；b00118支持训练设置及推理配置例外。所提供文本未明确4B专属硬件。"
+      },
+      {
+        "claim_id": "c014",
+        "verdict": "supported",
+        "reason": "b00147、b00150—b00153支持100步、全部耗时与产出数字及13—70步统计窗口；b00067支持匹配预算。结论保留独立运行和收益有限的限制，未声称固有速度优势。"
+      },
+      {
+        "claim_id": "c015",
+        "verdict": "supported",
+        "reason": "b00126直接支持首末桶比例、任务趋于全对及课程落后于能力边界的作者解释；b00056、b00057支持质量和新颖性仍高而优化效用下降。"
+      },
+      {
+        "claim_id": "c016",
+        "verdict": "supported",
+        "reason": "b00125支持2940题中475题产生非退化反馈；b00144支持0.009相关性；b00145明确可教性在观察轨迹后计算且相关性源于构造，不能据此证明事前预测能力。"
+      },
+      {
+        "claim_id": "c017",
+        "verdict": "supported",
+        "reason": "b00056明确未记录精确迭代编号、以生成顺序近似进度；b00151明确独立运行的小幅耗时差异不能证明固有速度优势。"
+      },
+      {
+        "claim_id": "c018",
+        "verdict": "supported",
+        "reason": "b00014直接支持两个独立参数智能体的角色划分，以及Reasoner实际行为反馈用于改进合成。"
+      },
+      {
+        "claim_id": "c019",
+        "verdict": "supported",
+        "reason": "b00080明确同批交互产生Reasoner轨迹级正确性奖励和Synthesizer任务级反馈，并更新两个独立参数策略。"
+      },
+      {
+        "claim_id": "c020",
+        "verdict": "supported",
+        "reason": "b00119明确Reasoner仅接收题目，并说明每轮合成提示词使用任务池统计、近期能力诊断和拒绝反馈。"
+      },
+      {
+        "claim_id": "c021",
+        "verdict": "supported",
+        "reason": "b00023、b00045支持记忆内容及重建合成上下文；所提供文本未明确两个智能体是否均直接读写该存储，结论保留了这一信息边界。"
+      },
+      {
+        "claim_id": "c022",
+        "verdict": "supported",
+        "reason": "b00118支持每轮32题、每个获准任务4条轨迹；b00042支持同一训练迭代更新两策略。这些描述本身不确立硬件并行执行。"
+      },
+      {
+        "claim_id": "c023",
+        "verdict": "supported",
+        "reason": "b00045支持更新解题和合成策略；b00051明确更新后的上下文与合成策略共同改变后续训练分布。"
+      },
+      {
+        "claim_id": "c024",
+        "verdict": "supported",
+        "reason": "b00001支持两类智能体的反馈来源；b00112明确新颖性与诊断对齐仅记录用于分析，不直接进入主实验门控奖励。"
+      },
+      {
+        "claim_id": "c025",
+        "verdict": "supported",
+        "reason": "b00118明确通过UnityMAS-O使用GRPO优化两个智能体；b00021明确同一在线批次提供各智能体的组相对优化信号。"
+      },
+      {
+        "claim_id": "c026",
+        "verdict": "supported",
+        "reason": "b00013完整描述生成任务、在线联合更新及重塑未来课程的闭环，支持将所述自进化定位于在线训练过程。"
+      },
+      {
+        "claim_id": "c027",
+        "verdict": "supported",
+        "reason": "b00045、b00046、b00048支持跨迭代保留交互信息、拒绝原因及使用近期窗口重建状态；训练结束后的存储持续性在所提供文本中未交代。"
+      },
+      {
+        "claim_id": "c028",
+        "verdict": "supported",
+        "reason": "b00113明确标准测试划分及所有方法统一的答案提取、验证流程；b00130明确收益归因比较使用固定终点检查点。结论未将这一检查点条件扩大到全部实验。"
+      }
+    ],
+    "quote_check_passed": true,
+    "reviewed_against_original": true
+  },
+  "reading": {
+    "read_chunks": 4,
+    "total_chunks": 4,
+    "total_blocks": 153,
+    "read_block_ids": [
+      "b00001",
+      "b00002",
+      "b00003",
+      "b00004",
+      "b00005",
+      "b00006",
+      "b00007",
+      "b00008",
+      "b00009",
+      "b00010",
+      "b00011",
+      "b00012",
+      "b00013",
+      "b00014",
+      "b00015",
+      "b00016",
+      "b00017",
+      "b00018",
+      "b00019",
+      "b00020",
+      "b00021",
+      "b00022",
+      "b00023",
+      "b00024",
+      "b00025",
+      "b00026",
+      "b00027",
+      "b00028",
+      "b00029",
+      "b00030",
+      "b00031",
+      "b00032",
+      "b00033",
+      "b00034",
+      "b00035",
+      "b00036",
+      "b00037",
+      "b00038",
+      "b00039",
+      "b00040",
+      "b00041",
+      "b00042",
+      "b00043",
+      "b00044",
+      "b00045",
+      "b00046",
+      "b00047",
+      "b00048",
+      "b00049",
+      "b00050",
+      "b00051",
+      "b00052",
+      "b00053",
+      "b00054",
+      "b00055",
+      "b00056",
+      "b00057",
+      "b00058",
+      "b00059",
+      "b00060",
+      "b00061",
+      "b00062",
+      "b00063",
+      "b00064",
+      "b00065",
+      "b00066",
+      "b00067",
+      "b00068",
+      "b00069",
+      "b00070",
+      "b00071",
+      "b00072",
+      "b00073",
+      "b00074",
+      "b00075",
+      "b00076",
+      "b00077",
+      "b00078",
+      "b00079",
+      "b00080",
+      "b00081",
+      "b00082",
+      "b00083",
+      "b00084",
+      "b00085",
+      "b00086",
+      "b00087",
+      "b00088",
+      "b00089",
+      "b00090",
+      "b00091",
+      "b00092",
+      "b00093",
+      "b00094",
+      "b00095",
+      "b00096",
+      "b00097",
+      "b00098",
+      "b00099",
+      "b00100",
+      "b00101",
+      "b00102",
+      "b00103",
+      "b00104",
+      "b00105",
+      "b00106",
+      "b00107",
+      "b00108",
+      "b00109",
+      "b00110",
+      "b00111",
+      "b00112",
+      "b00113",
+      "b00114",
+      "b00115",
+      "b00116",
+      "b00117",
+      "b00118",
+      "b00119",
+      "b00120",
+      "b00121",
+      "b00122",
+      "b00123",
+      "b00124",
+      "b00125",
+      "b00126",
+      "b00127",
+      "b00128",
+      "b00129",
+      "b00130",
+      "b00131",
+      "b00132",
+      "b00133",
+      "b00134",
+      "b00135",
+      "b00136",
+      "b00137",
+      "b00138",
+      "b00139",
+      "b00140",
+      "b00141",
+      "b00142",
+      "b00143",
+      "b00144",
+      "b00145",
+      "b00146",
+      "b00147",
+      "b00148",
+      "b00149",
+      "b00150",
+      "b00151",
+      "b00152",
+      "b00153"
+    ],
+    "content_hash": "552b71b5c2469df18b9affaac81fdf8d1d376bade5556a384ddedf0fd64e5920",
+    "raw_sha256": "79aa7675f65237f134ede261da25ad83100d309d0faf03e4b3bf73efe37a8c31",
+    "prompt_version": "2026-10-24.v1"
+  },
+  "warnings": [
+    "全文指已提取的文本块；图片、图表视觉、公式和部分算法环境未独立核验。",
+    "未复现实验；发表信息如有列出，来自作者且未独立核实。"
+  ],
+  "created_at": "2026-10-30T16:12:15.921606+00:00",
+  "path": "papers/2610.11345/v1/",
+  "latest_known_version": 1,
+  "versions": [
+    {
+      "version": 1,
+      "path": "papers/2610.11345/v1/",
+      "status": "analyzed"
+    }
+  ]
+}
